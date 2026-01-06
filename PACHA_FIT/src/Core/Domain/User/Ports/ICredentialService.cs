@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿
+using System.Security.Claims;
 
 namespace PACHA_FIT.Core.Domain.User.Ports;
 

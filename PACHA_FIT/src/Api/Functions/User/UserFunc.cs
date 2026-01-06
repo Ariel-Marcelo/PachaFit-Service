@@ -6,6 +6,7 @@ using PACHA_FIT.Api.Shared;
 using PACHA_FIT.Core.Application;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
+using PACHA_FIT.Core.Domain.User.Ports;
 
 namespace PACHA_FIT.Api.Functions.User;
 

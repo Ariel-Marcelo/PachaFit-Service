@@ -7,9 +7,10 @@ using PACHA_FIT.Api.Functions;
 using PACHA_FIT.Api.Functions.Middlewares;
 using PACHA_FIT.Core.Application;
 using PACHA_FIT.Core.Application.Shared;
+using PACHA_FIT.Core.Application.User;
 using PACHA_FIT.Core.Domain.Adapters;
 using PACHA_FIT.Core.Domain.User.Ports;
-using PACHA_FIT.src.Core.Domain.Entities;
+using PACHA_FIT.Infrastructure.Persistence;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 

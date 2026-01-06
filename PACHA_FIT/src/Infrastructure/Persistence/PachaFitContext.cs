@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PACHA_FIT.Core.Domain.Entities;
 
-namespace PACHA_FIT.src.Core.Domain.Entities;
+namespace PACHA_FIT.Infrastructure.Persistence;
 
 public partial class PachaFitContext : DbContext
 {

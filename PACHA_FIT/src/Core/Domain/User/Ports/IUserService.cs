@@ -1,11 +1,9 @@
-﻿using PACHA_FIT.Core.Domain.Dtos.Requests.User;
-using PACHA_FIT.Core.Domain.Entities;
-using PACHA_FIT.Core.Domain.Shared.Dtos;
+﻿using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
 
-namespace PACHA_FIT.Core.Application;
+namespace PACHA_FIT.Core.Domain.User.Ports;
 
 public interface IUserService
 {
-    public Task<Result<User>> SearchUser(UserSearchingRequest request);
+    public Task<Result<Entities.User>> SearchUser(UserSearchingRequest request);
 }

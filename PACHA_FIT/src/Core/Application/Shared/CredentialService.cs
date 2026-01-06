@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using PACHA_FIT.Core.Domain.Entities;
 using PACHA_FIT.Core.Domain.User.Ports;
 
 namespace PACHA_FIT.Core.Application.Shared;
@@ -13,7 +12,7 @@ public class CredentialService : ICredentialService
     private readonly string _issuer = "PachaFitApi";
     private readonly string _audience = "PachaFitApp";
 
-    public string GenerateToken(User user)
+    public string GenerateToken(Domain.Entities.User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_secretKey);

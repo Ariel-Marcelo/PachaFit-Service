@@ -1,6 +1,4 @@
-﻿using PACHA_FIT.src.Core.Domain.Entities;
-
-namespace PACHA_FIT.Core.Domain.Entities;
+﻿namespace PACHA_FIT.Core.Domain.Entities;
 
 public partial class Supplier
 {

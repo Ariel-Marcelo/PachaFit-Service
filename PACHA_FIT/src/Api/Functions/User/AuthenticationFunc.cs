@@ -9,6 +9,8 @@ using PACHA_FIT.Core.Domain.Adapters;
 using PACHA_FIT.Core.Domain.Dtos.Requests.User;
 using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
+using PACHA_FIT.Core.Domain.User.Dtos;
+using PACHA_FIT.Core.Domain.User.Ports;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -24,13 +26,13 @@ public class AuthenticationFunc
     }
 
     [Function("authentication")]
-    public async Task<Result<string>> RunLogin([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequest req)
+    public async Task<Result<LoginResponse>> RunLogin([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequest req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var loginData = JsonSerializer.Deserialize<LoginRequest>(body);
         
         ObjectValidator.Validate(loginData ?? throw new InvalidCastException());
-        return await _authService.ValidateCredentials(loginData);
+        return await _authService.LoginUser(loginData);
     }
 
     [Function("CreateUser")]
