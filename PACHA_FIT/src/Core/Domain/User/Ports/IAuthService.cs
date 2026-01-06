@@ -1,5 +1,6 @@
 ﻿using PACHA_FIT.Api.Shared;
 using PACHA_FIT.Core.Domain.Dtos.Requests.User;
+using PACHA_FIT.Core.Domain.Shared.Dtos;
 
 namespace PACHA_FIT.Core.Domain.Adapters;
 

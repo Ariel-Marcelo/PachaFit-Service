@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
+using Microsoft.EntityFrameworkCore;
 using PACHA_FIT.Api.Shared;
 using PACHA_FIT.Core.Domain.Adapters;
 using PACHA_FIT.Core.Domain.Dtos.Requests.User;
 using PACHA_FIT.Core.Domain.Entities;
+using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.src.Core.Domain.Entities;
 
@@ -36,7 +38,7 @@ public class AuthService: IAuthService
 
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
         {
-            throw new UnauthorizedAccessException("Invalid username or password");
+            return Result<string>.Failure("Usuario o contraseña incorrecto", HttpStatusCode.Unauthorized.GetHashCode());
         }
         var token = _credentialService.GenerateToken(user);
         return Result<string>.Success(token);

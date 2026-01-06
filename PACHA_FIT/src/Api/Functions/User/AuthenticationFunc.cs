@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -7,6 +8,7 @@ using PACHA_FIT.Api.Shared;
 using PACHA_FIT.Core.Domain.Adapters;
 using PACHA_FIT.Core.Domain.Dtos.Requests.User;
 using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Core.Domain.Shared.Dtos;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -22,35 +24,25 @@ public class AuthenticationFunc
     }
 
     [Function("authentication")]
-    public async Task<IActionResult> RunLoginUser([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+    public async Task<Result<string>> RunLogin([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequest req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var loginData = JsonSerializer.Deserialize<LoginRequest>(body);
-
+        
         ObjectValidator.Validate(loginData ?? throw new InvalidCastException());
-
-        var result = await _authService.ValidateCredentials(loginData);
-
-        return new OkObjectResult(result.Value);
+        return await _authService.ValidateCredentials(loginData);
     }
 
-    [Function("user")]
-    public async Task<IActionResult> RunCreateUser([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+    [Function("CreateUser")]
+    public async Task<Result<string>> RunSignUp([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")] HttpRequest req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var userData = JsonSerializer.Deserialize<NewUserRequest>(body);
-
         ObjectValidator.Validate(userData ?? throw new InvalidCastException());
 
         await _authService.CreateUser(userData);
-
-        return new OkObjectResult("User create successful");
+        return Result<string>.Failure("El usuario se creó correctamente", HttpStatusCode.Created.GetHashCode());
     }
 
-    [Function("user")]
-    [PachaAuthorize(Roles = "Admin")]
-    public  IActionResult RunGetUser([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
-    {
-        return new OkObjectResult("User get successful");
-    }
+    
 }
