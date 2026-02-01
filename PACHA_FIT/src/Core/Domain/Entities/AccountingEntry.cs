@@ -1,4 +1,7 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class AccountingEntry
 {
@@ -18,7 +21,11 @@ public partial class AccountingEntry
 
     public DateTimeOffset? EntryDate { get; set; }
 
+    public int? CreditNoteId { get; set; }
+
     public virtual Account? Account { get; set; }
+
+    public virtual CreditNote? CreditNote { get; set; }
 
     public virtual PurchaseOrder? Purchase { get; set; }
 

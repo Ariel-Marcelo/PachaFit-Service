@@ -1,4 +1,7 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class StockMovement
 {
@@ -19,6 +22,14 @@ public partial class StockMovement
     public int? PurchaseId { get; set; }
 
     public DateTimeOffset? CreatedAt { get; set; }
+
+    public int? AdjustmentReasonId { get; set; }
+
+    public int? CreditNoteId { get; set; }
+
+    public virtual AdjustmentReason? AdjustmentReason { get; set; }
+
+    public virtual CreditNote? CreditNote { get; set; }
 
     public virtual UnitOfMeasure? InputUnit { get; set; }
 

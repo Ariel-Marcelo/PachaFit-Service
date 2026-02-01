@@ -1,4 +1,7 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class Product
 {
@@ -39,6 +42,8 @@ public partial class Product
     public DateTimeOffset? CreatedAt { get; set; }
 
     public virtual Category? Category { get; set; }
+
+    public virtual ICollection<CreditNoteItem> CreditNoteItems { get; set; } = new List<CreditNoteItem>();
 
     public virtual ICollection<ProductComposition> ProductCompositionBaseProducts { get; set; } = new List<ProductComposition>();
 

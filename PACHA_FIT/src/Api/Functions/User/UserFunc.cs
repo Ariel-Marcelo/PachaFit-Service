@@ -1,9 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using PACHA_FIT.Api.Shared;
-using PACHA_FIT.Core.Application;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
@@ -23,15 +21,14 @@ public class UserFunc
 
     [Function("GetUsers")]
     [PachaAuthorize(Roles = "Admin")]
-    public async Task<Result<Core.Domain.Entities.User>> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+    public async Task<ResultDto<Core.Domain.Entities.User>> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
         string? emailFilter = req.Query["email"];
         var request = new UserSearchingRequest
         {
             Email = emailFilter
         };
-        var result = await _userService.SearchUser(request);
-        return result;
+        return await _userService.SearchUser(request);
     }
 
 }

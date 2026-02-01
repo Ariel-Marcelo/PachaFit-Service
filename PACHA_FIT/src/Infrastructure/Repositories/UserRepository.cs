@@ -22,4 +22,11 @@ public class UserRepository: IUserRepository
             .FirstOrDefaultAsync(u => u.Email == request.UserName || u.FullName == request.UserName);
         return user;
     }
+
+    public async Task<User> SaveUser(User user)
+    {
+        var savedUser = _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return savedUser.Entity;
+    }
 }

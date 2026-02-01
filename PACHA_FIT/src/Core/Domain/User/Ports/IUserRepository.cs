@@ -5,4 +5,6 @@ namespace PACHA_FIT.Core.Domain.User.Ports;
 public interface IUserRepository
 {
     public Task<Entities.User?> GetUserRole(UserSearchingRequest search);
+    
+    public Task<Entities.User> SaveUser(Entities.User user);
 }

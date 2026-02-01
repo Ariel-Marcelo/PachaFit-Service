@@ -5,5 +5,5 @@ namespace PACHA_FIT.Core.Domain.User.Ports;
 
 public interface IUserService
 {
-    public Task<Result<Entities.User>> SearchUser(UserSearchingRequest request);
+    public Task<ResultDto<Entities.User>> SearchUser(UserSearchingRequest request);
 }

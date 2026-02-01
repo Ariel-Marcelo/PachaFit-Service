@@ -1,12 +1,8 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using PACHA_FIT.Api.Shared;
-using PACHA_FIT.Core.Domain.Adapters;
-using PACHA_FIT.Core.Domain.Dtos.Requests.User;
 using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
@@ -26,7 +22,7 @@ public class AuthenticationFunc
     }
 
     [Function("authentication")]
-    public async Task<Result<LoginResponse>> RunLogin([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequest req)
+    public async Task<ResultDto<LoginResponse>> RunLogin([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequest req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var loginData = JsonSerializer.Deserialize<LoginRequest>(body);
@@ -35,16 +31,14 @@ public class AuthenticationFunc
         return await _authService.LoginUser(loginData);
     }
 
-    [Function("CreateUser")]
-    public async Task<Result<string>> RunSignUp([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")] HttpRequest req)
+    [Function("SignUp")]
+    public async Task<ResultDto<string>> RunSignUp([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")] HttpRequest req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var userData = JsonSerializer.Deserialize<NewUserRequest>(body);
         ObjectValidator.Validate(userData ?? throw new InvalidCastException());
 
-        await _authService.CreateUser(userData);
-        return Result<string>.Failure("El usuario se creó correctamente", HttpStatusCode.Created.GetHashCode());
+        await _authService.SignUp(userData);
+        return ResultDto<string>.Failure("El usuario se creó correctamente", HttpStatusCode.Created.GetHashCode());
     }
-
-    
 }
