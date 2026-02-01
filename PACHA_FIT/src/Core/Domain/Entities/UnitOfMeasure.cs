@@ -1,4 +1,7 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class UnitOfMeasure
 {

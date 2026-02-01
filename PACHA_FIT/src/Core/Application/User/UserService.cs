@@ -1,5 +1,4 @@
-using System.Net;
-using Microsoft.EntityFrameworkCore;
+using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
@@ -9,19 +8,18 @@ namespace PACHA_FIT.Core.Application.User;
 
 public class UserService : IUserService
 {
-    private readonly PachaFitContext _context;
+    private readonly IUserRepository _userRepository;
 
-    public UserService(PachaFitContext context)
+    public UserService(IUserRepository userRepository)
     {
-        _context = context;
+        _userRepository = userRepository;
     }
 
-    public async Task<Result<Domain.Entities.User>> SearchUser(UserSearchingRequest request)
+    public async Task<ResultDto<Domain.Entities.User>> SearchUser(UserSearchingRequest request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-        
+        var user = await _userRepository.GetUserRole(request);
         return user == null
-            ? Result<Domain.Entities.User>.Failure("Usuario no encontrado", HttpStatusCode.NotFound.GetHashCode())
-            : Result<Domain.Entities.User>.Success(user);
+            ? ResultDto<Domain.Entities.User>.Failure("Usuario no encontrado", ErrorCodes.NotFound)
+            : ResultDto<Domain.Entities.User>.Success(user);
     }
 }

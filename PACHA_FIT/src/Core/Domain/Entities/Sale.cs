@@ -1,4 +1,8 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+using PACHA_FIT.Core.Domain.Entities;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class Sale
 {
@@ -26,7 +30,15 @@ public partial class Sale
 
     public DateTimeOffset? SaleDate { get; set; }
 
+    public bool? IsCredit { get; set; }
+
+    public DateTimeOffset? DueDate { get; set; }
+
     public virtual ICollection<AccountingEntry> AccountingEntries { get; set; } = new List<AccountingEntry>();
+
+    public virtual ICollection<CreditNote> CreditNotes { get; set; } = new List<CreditNote>();
+
+    public virtual ICollection<CustomerPayment> CustomerPayments { get; set; } = new List<CustomerPayment>();
 
     public virtual PaymentMethod? PaymentMethod { get; set; }
 

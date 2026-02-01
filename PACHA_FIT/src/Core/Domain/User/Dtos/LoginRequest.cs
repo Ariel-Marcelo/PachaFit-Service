@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PACHA_FIT.Core.Domain.Dtos.Requests.User;
+namespace PACHA_FIT.Core.Domain.User.Dtos;
 
 public record LoginRequest
 {

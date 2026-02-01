@@ -1,4 +1,6 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using PACHA_FIT.src.Core.Domain.Entities;
+
+namespace PACHA_FIT.Core.Domain.Entities;
 
 public partial class User
 {
@@ -15,6 +17,22 @@ public partial class User
     public bool? IsActive { get; set; }
 
     public DateTimeOffset? CreatedAt { get; set; }
+
+    public string? IdentificationType { get; set; }
+
+    public string? IdentificationNumber { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
+    public virtual ICollection<AccountingPeriod> AccountingPeriodClosedByNavigations { get; set; } = new List<AccountingPeriod>();
+
+    public virtual ICollection<AccountingPeriod> AccountingPeriodLastReopenedByNavigations { get; set; } = new List<AccountingPeriod>();
+
+    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+
+    public virtual ICollection<CreditNote> CreditNotes { get; set; } = new List<CreditNote>();
 
     public virtual Role? Role { get; set; }
 

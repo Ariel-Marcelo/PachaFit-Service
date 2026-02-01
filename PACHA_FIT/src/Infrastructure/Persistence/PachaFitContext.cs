@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PACHA_FIT.Core.Domain.Entities;
+using PACHA_FIT.src.Core.Domain.Entities;
 
 namespace PACHA_FIT.Infrastructure.Persistence;
 
@@ -14,13 +15,27 @@ public partial class PachaFitContext : DbContext
 
     public virtual DbSet<AccountingEntry> AccountingEntries { get; set; }
 
+    public virtual DbSet<AccountingPeriod> AccountingPeriods { get; set; }
+
+    public virtual DbSet<AdjustmentReason> AdjustmentReasons { get; set; }
+
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
+
     public virtual DbSet<Category> Categories { get; set; }
+
+    public virtual DbSet<CreditNote> CreditNotes { get; set; }
+
+    public virtual DbSet<CreditNoteItem> CreditNoteItems { get; set; }
+
+    public virtual DbSet<CustomerPayment> CustomerPayments { get; set; }
 
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductComposition> ProductCompositions { get; set; }
+
+    public virtual DbSet<PurchaseExpense> PurchaseExpenses { get; set; }
 
     public virtual DbSet<PurchaseItem> PurchaseItems { get; set; }
 
@@ -51,8 +66,13 @@ public partial class PachaFitContext : DbContext
             entity.HasIndex(e => e.Code, "UQ__Accounts__A25C5AA7E468A306").IsUnique();
 
             entity.Property(e => e.Code).HasMaxLength(20);
+            entity.Property(e => e.IsPostable).HasDefaultValue(true);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Type).HasMaxLength(50);
+
+            entity.HasOne(d => d.ParentAccount).WithMany(p => p.InverseParentAccount)
+                .HasForeignKey(d => d.ParentAccountId)
+                .HasConstraintName("FK__Accounts__Parent__756D6ECB");
         });
 
         modelBuilder.Entity<AccountingEntry>(entity =>
@@ -72,6 +92,10 @@ public partial class PachaFitContext : DbContext
                 .HasForeignKey(d => d.AccountId)
                 .HasConstraintName("FK__Accountin__Accou__07C12930");
 
+            entity.HasOne(d => d.CreditNote).WithMany(p => p.AccountingEntries)
+                .HasForeignKey(d => d.CreditNoteId)
+                .HasConstraintName("FK__Accountin__Credi__078C1F06");
+
             entity.HasOne(d => d.Purchase).WithMany(p => p.AccountingEntries)
                 .HasForeignKey(d => d.PurchaseId)
                 .HasConstraintName("FK__Accountin__Purch__09A971A2");
@@ -79,6 +103,48 @@ public partial class PachaFitContext : DbContext
             entity.HasOne(d => d.Sale).WithMany(p => p.AccountingEntries)
                 .HasForeignKey(d => d.SaleId)
                 .HasConstraintName("FK__Accountin__SaleI__08B54D69");
+        });
+
+        modelBuilder.Entity<AccountingPeriod>(entity =>
+        {
+            entity.HasKey(e => e.PeriodId).HasName("PK__Accounti__E521BB16795CFA57");
+
+            entity.HasIndex(e => new { e.Year, e.Month }, "UQ_Period").IsUnique();
+
+            entity.Property(e => e.IsClosed).HasDefaultValue(false);
+            entity.Property(e => e.ReopenReason).HasMaxLength(500);
+
+            entity.HasOne(d => d.ClosedByNavigation).WithMany(p => p.AccountingPeriodClosedByNavigations)
+                .HasForeignKey(d => d.ClosedBy)
+                .HasConstraintName("FK__Accountin__Close__0E391C95");
+
+            entity.HasOne(d => d.LastReopenedByNavigation).WithMany(p => p.AccountingPeriodLastReopenedByNavigations)
+                .HasForeignKey(d => d.LastReopenedBy)
+                .HasConstraintName("FK__Accountin__LastR__0F2D40CE");
+        });
+
+        modelBuilder.Entity<AdjustmentReason>(entity =>
+        {
+            entity.HasKey(e => e.ReasonId).HasName("PK__Adjustme__A4F8C0E7C12F4CE2");
+
+            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Name).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.AuditId).HasName("PK__AuditLog__A17F23980B61CE03");
+
+            entity.Property(e => e.Action).HasMaxLength(20);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.IpAddress).HasMaxLength(45);
+            entity.Property(e => e.RecordId).HasMaxLength(100);
+            entity.Property(e => e.TableName).HasMaxLength(100);
+
+            entity.HasOne(d => d.User).WithMany(p => p.AuditLogs)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__AuditLogs__UserI__72910220");
         });
 
         modelBuilder.Entity<Category>(entity =>
@@ -93,6 +159,72 @@ public partial class PachaFitContext : DbContext
             entity.HasOne(d => d.ParentCategory).WithMany(p => p.InverseParentCategory)
                 .HasForeignKey(d => d.ParentCategoryId)
                 .HasConstraintName("FK__Categorie__Paren__5070F446");
+        });
+
+        modelBuilder.Entity<CreditNote>(entity =>
+        {
+            entity.HasKey(e => e.CreditNoteId).HasName("PK__CreditNo__AF360DC6FF05BBC4");
+
+            entity.HasIndex(e => e.NoteNumber, "UQ__CreditNo__069440D2A3F5F451").IsUnique();
+
+            entity.Property(e => e.AdjustmentType)
+                .HasMaxLength(50)
+                .HasDefaultValue("DEVOLUCION");
+            entity.Property(e => e.AffectsInventory).HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreditNoteUuid).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.NoteNumber).HasMaxLength(50);
+            entity.Property(e => e.Reason).HasMaxLength(255);
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.TotalTax).HasColumnType("decimal(18, 4)");
+
+            entity.HasOne(d => d.Sale).WithMany(p => p.CreditNotes)
+                .HasForeignKey(d => d.SaleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CreditNot__SaleI__69FBBC1F");
+
+            entity.HasOne(d => d.User).WithMany(p => p.CreditNotes)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__CreditNot__UserI__6AEFE058");
+        });
+
+        modelBuilder.Entity<CreditNoteItem>(entity =>
+        {
+            entity.HasKey(e => e.CreditNoteItemId).HasName("PK__CreditNo__58E8CE59D1A75B4A");
+
+            entity.Property(e => e.Quantity).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.TaxAmount).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.UnitPriceSnapshot).HasColumnType("decimal(18, 4)");
+
+            entity.HasOne(d => d.CreditNote).WithMany(p => p.CreditNoteItems)
+                .HasForeignKey(d => d.CreditNoteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CreditNot__Credi__6EC0713C");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.CreditNoteItems)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CreditNot__Produ__6FB49575");
+        });
+
+        modelBuilder.Entity<CustomerPayment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId).HasName("PK__Customer__9B556A382CD9967D");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.Notes).HasMaxLength(255);
+            entity.Property(e => e.PaymentDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.ReferenceNumber).HasMaxLength(100);
+
+            entity.HasOne(d => d.PaymentMethod).WithMany(p => p.CustomerPayments)
+                .HasForeignKey(d => d.PaymentMethodId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CustomerP__Payme__7D0E9093");
+
+            entity.HasOne(d => d.Sale).WithMany(p => p.CustomerPayments)
+                .HasForeignKey(d => d.SaleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CustomerP__SaleI__7C1A6C5A");
         });
 
         modelBuilder.Entity<PaymentMethod>(entity =>
@@ -165,6 +297,24 @@ public partial class PachaFitContext : DbContext
                 .HasConstraintName("FK__ProductCo__UnitI__04E4BC85");
         });
 
+        modelBuilder.Entity<PurchaseExpense>(entity =>
+        {
+            entity.HasKey(e => e.PurchaseExpenseId).HasName("PK__Purchase__D5E71DC0FA258615");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.Description).HasMaxLength(255);
+
+            entity.HasOne(d => d.Account).WithMany(p => p.PurchaseExpenses)
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__PurchaseE__Accou__65370702");
+
+            entity.HasOne(d => d.Purchase).WithMany(p => p.PurchaseExpenses)
+                .HasForeignKey(d => d.PurchaseId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__PurchaseE__Purch__6442E2C9");
+        });
+
         modelBuilder.Entity<PurchaseItem>(entity =>
         {
             entity.HasKey(e => e.PurchaseItemId).HasName("PK__Purchase__B48BB687CE5BA814");
@@ -220,6 +370,7 @@ public partial class PachaFitContext : DbContext
 
             entity.HasIndex(e => e.OrderNumber, "UQ__Sales__CAC5E7433F24FD0C").IsUnique();
 
+            entity.Property(e => e.IsCredit).HasDefaultValue(false);
             entity.Property(e => e.OrderNumber).HasMaxLength(50);
             entity.Property(e => e.Origin)
                 .HasMaxLength(20)
@@ -273,6 +424,14 @@ public partial class PachaFitContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.InputQuantity).HasColumnType("decimal(18, 4)");
             entity.Property(e => e.TypeMovement).HasMaxLength(50);
+
+            entity.HasOne(d => d.AdjustmentReason).WithMany(p => p.StockMovements)
+                .HasForeignKey(d => d.AdjustmentReasonId)
+                .HasConstraintName("FK__StockMove__Adjus__7755B73D");
+
+            entity.HasOne(d => d.CreditNote).WithMany(p => p.StockMovements)
+                .HasForeignKey(d => d.CreditNoteId)
+                .HasConstraintName("FK__StockMove__Credi__7849DB76");
 
             entity.HasOne(d => d.InputUnit).WithMany(p => p.StockMovements)
                 .HasForeignKey(d => d.InputUnitId)
@@ -329,10 +488,16 @@ public partial class PachaFitContext : DbContext
 
             entity.HasIndex(e => e.Email, "UQ__Users__A9D105345028B452").IsUnique();
 
+            entity.Property(e => e.Address).HasMaxLength(500);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.FullName).HasMaxLength(200);
+            entity.Property(e => e.IdentificationNumber).HasMaxLength(20);
+            entity.Property(e => e.IdentificationType)
+                .HasMaxLength(3)
+                .HasDefaultValue("05");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(20);
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

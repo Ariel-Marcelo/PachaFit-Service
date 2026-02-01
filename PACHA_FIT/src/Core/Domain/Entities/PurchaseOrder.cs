@@ -1,4 +1,8 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+using PACHA_FIT.Core.Domain.Entities;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class PurchaseOrder
 {
@@ -17,6 +21,8 @@ public partial class PurchaseOrder
     public string? Status { get; set; }
 
     public virtual ICollection<AccountingEntry> AccountingEntries { get; set; } = new List<AccountingEntry>();
+
+    public virtual ICollection<PurchaseExpense> PurchaseExpenses { get; set; } = new List<PurchaseExpense>();
 
     public virtual ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
 

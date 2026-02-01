@@ -1,4 +1,8 @@
-﻿namespace PACHA_FIT.Core.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+using PACHA_FIT.Core.Domain.Entities;
+
+namespace PACHA_FIT.src.Core.Domain.Entities;
 
 public partial class Account
 {
@@ -10,5 +14,15 @@ public partial class Account
 
     public string? Type { get; set; }
 
+    public int? ParentAccountId { get; set; }
+
+    public bool? IsPostable { get; set; }
+
     public virtual ICollection<AccountingEntry> AccountingEntries { get; set; } = new List<AccountingEntry>();
+
+    public virtual ICollection<Account> InverseParentAccount { get; set; } = new List<Account>();
+
+    public virtual Account? ParentAccount { get; set; }
+
+    public virtual ICollection<PurchaseExpense> PurchaseExpenses { get; set; } = new List<PurchaseExpense>();
 }
