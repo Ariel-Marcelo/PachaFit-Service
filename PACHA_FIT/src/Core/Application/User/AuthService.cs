@@ -1,4 +1,5 @@
-﻿using PACHA_FIT.Core.Domain.Shared;
+﻿using PACHA_FIT.Core.Application.User.Mappers;
+using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
@@ -9,11 +10,13 @@ public class AuthService: IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly ICredentialService _credentialService;
+    private readonly UserMapper _userMapper;
 
-    public AuthService(ICredentialService credentialService, IUserRepository userRepository)
+    public AuthService(ICredentialService credentialService, IUserRepository userRepository, UserMapper userMapper)
     {
         _credentialService = credentialService;
         _userRepository = userRepository;
+        _userMapper = userMapper;
     }
 
     private string HashPassword(string password)
@@ -40,24 +43,13 @@ public class AuthService: IAuthService
 
         var token = _credentialService.GenerateToken(user);
         
-        var response =  new LoginResponse
-        {
-            Token = token,
-            FullName = user?.FullName ?? string.Empty,
-            Email = user?.Email ?? string.Empty,
-            RoleName = user?.Role?.Name ?? string.Empty
-        };
+        var response = _userMapper.UserToLoginResponse(user, token);
         
         return ResultDto<LoginResponse>.Success(response);
     }
 
     public async Task SignUp(NewUserRequest request)
     {
-        await _userRepository.SaveUser(new Core.Domain.Entities.User
-        {
-            FullName = request.FullName,
-            Email = request.Email,
-            PasswordHash = HashPassword(request.Password),
-        });
+        await _userRepository.SaveUser(_userMapper.RequestToUser(request, HashPassword(request.Password)));
     }
 }

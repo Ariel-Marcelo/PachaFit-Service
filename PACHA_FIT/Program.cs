@@ -8,6 +8,7 @@ using PACHA_FIT.Api.Functions.Middlewares;
 using PACHA_FIT.Core.Application;
 using PACHA_FIT.Core.Application.Shared;
 using PACHA_FIT.Core.Application.User;
+using PACHA_FIT.Core.Application.User.Mappers;
 using PACHA_FIT.Core.Domain.Adapters;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Persistence;
@@ -32,6 +33,7 @@ string connectionString = Environment.GetEnvironmentVariable("SqlConnectionStrin
 builder.Services.AddDbContext<PachaFitContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddSingleton<UserMapper>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<ICredentialService, CredentialService>();
 
