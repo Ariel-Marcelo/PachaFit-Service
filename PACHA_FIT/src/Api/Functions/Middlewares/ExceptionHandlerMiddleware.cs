@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -24,22 +26,28 @@ public class ExceptionHandlerMiddleware: IFunctionsWorkerMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ocurrió una excepción no controlada.");
+            _logger.LogError(ex, "Ocurrió una excepción.");
             var httpRequestData = await context.GetHttpRequestDataAsync();
 
             if (httpRequestData != null)
             {
-                var response = httpRequestData.CreateResponse(HttpStatusCode.InternalServerError);
+                var statusCode = ex is ValidationException || ex is JsonException
+                    ? HttpStatusCode.BadRequest
+                    : HttpStatusCode.InternalServerError;
+
+                var response = httpRequestData.CreateResponse(statusCode);
                 
                 var errorBody = new 
                 { 
-                    Message = "Se produjo un error interno en el servidor.",
-                    Details = ex.InnerException?.Message ?? ex.Message 
+                    Message = statusCode == HttpStatusCode.BadRequest 
+                        ? "Error de validación en los datos." 
+                        : "Se produjo un error interno en el servidor.",
+                    Details = statusCode == HttpStatusCode.BadRequest 
+                        ? ex.Message 
+                        : ex.InnerException?.Message ?? ex.Message
                 };
 
                 await response.WriteAsJsonAsync(errorBody);
-                
-                // 3. Establecer la respuesta en el contexto para que Azure la envíe
                 context.GetInvocationResult().Value = response;
             }
         }

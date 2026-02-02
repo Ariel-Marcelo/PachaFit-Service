@@ -7,5 +7,5 @@ public interface IAuthService
 {
     public Task<ResultDto<LoginResponse>> LoginUser(LoginRequest request);
     
-    public Task SignUp(NewUserRequest request);
+    public Task<ResultDto<string>> SignUp(NewUserRequest request);
 }

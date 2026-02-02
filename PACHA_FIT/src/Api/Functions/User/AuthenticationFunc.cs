@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -26,19 +25,28 @@ public class AuthenticationFunc
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var loginData = JsonSerializer.Deserialize<LoginRequest>(body);
+
+        if (loginData == null)
+        {
+             return ResultDto<LoginResponse>.Failure("Request inválido", ErrorCodes.BadRequest);
+        }
         
-        ObjectValidator.Validate(loginData ?? throw new InvalidCastException());
+        ObjectValidator.Validate(loginData);
         return await _authService.LoginUser(loginData);
     }
 
     [Function("SignUp")]
     public async Task<ResultDto<string>> RunSignUp([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")] HttpRequest req)
     {
-        var body = await new StreamReader(req.Body).ReadToEndAsync();
-        var userData = JsonSerializer.Deserialize<NewUserRequest>(body);
-        ObjectValidator.Validate(userData ?? throw new InvalidCastException());
+        var request = await req.ReadFromJsonAsync<NewUserRequest>();
+        
+        if (request == null) 
+        {
+            return ResultDto<string>.Failure("Petición sin body", ErrorCodes.BadRequest);
+        }
+    
+        ObjectValidator.Validate(request);
 
-        await _authService.SignUp(userData);
-        return ResultDto<string>.Failure("El usuario se creó correctamente", HttpStatusCode.Created.GetHashCode());
+        return await _authService.SignUp(request);
     }
 }

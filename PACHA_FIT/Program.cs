@@ -1,17 +1,13 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PACHA_FIT.Api.Functions;
 using PACHA_FIT.Api.Functions.Middlewares;
-using PACHA_FIT.Core.Application;
 using PACHA_FIT.Core.Application.Shared;
 using PACHA_FIT.Core.Application.User;
-using PACHA_FIT.Core.Application.User.Mappers;
-using PACHA_FIT.Core.Domain.Adapters;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Persistence;
+using PACHA_FIT.Infrastructure.Repositories;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -33,8 +29,8 @@ string connectionString = Environment.GetEnvironmentVariable("SqlConnectionStrin
 builder.Services.AddDbContext<PachaFitContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddSingleton<UserMapper>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<ICredentialService, CredentialService>();
 
 builder.Build().Run();
