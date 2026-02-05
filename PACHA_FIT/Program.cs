@@ -30,6 +30,7 @@ builder.Services.AddDbContext<PachaFitContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<ICredentialService, CredentialService>();
 

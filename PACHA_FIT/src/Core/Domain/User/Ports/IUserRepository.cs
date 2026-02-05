@@ -1,10 +1,11 @@
+using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.User.Dtos;
 
 namespace PACHA_FIT.Core.Domain.User.Ports;
 
 public interface IUserRepository
 {
-    public Task<Entities.User?> GetUserRole(UserSearchingRequest search);
-    
-    public Task<Entities.User> SaveUser(Entities.User user);
+    Task<Entities.User?> GetOneAsync(ISpecification<Entities.User> spec);
+    Task<Entities.User> SaveUser(Entities.User user);
+    Task UpdateUser(Entities.User user);
 }

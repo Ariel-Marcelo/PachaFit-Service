@@ -3,6 +3,7 @@ using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.Dtos;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
+using PACHA_FIT.Core.Domain.User.Specifications;
 
 namespace PACHA_FIT.Core.Application.User;
 
@@ -19,7 +20,7 @@ public class AuthService : IAuthService
 
     public async Task<ResultDto<LoginResponse>> LoginUser(LoginRequest request)
     {
-        var user = await _userRepository.GetUserRole(new UserSearchingRequest { UserName = request.Username });
+        var user = await _userRepository.GetOneAsync(new UserByEmailSpecification(request.Username));
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
         {
             return ResultDto<LoginResponse>.Failure("Credenciales incorrectas", ErrorCodes.Unauthorized);
@@ -32,7 +33,7 @@ public class AuthService : IAuthService
 
     public async Task<ResultDto<string>> SignUp(NewUserRequest request)
     {
-        var existingUser = await _userRepository.GetUserRole(new UserSearchingRequest { UserName = request.Email });
+        var existingUser = await _userRepository.GetOneAsync(new UserByEmailSpecification(request.Email));
         if (existingUser != null)
         {
             return ResultDto<string>.Failure("El usuario ya existe", ErrorCodes.Conflict);

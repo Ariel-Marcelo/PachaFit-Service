@@ -11,6 +11,13 @@ public static partial class UserMapper
 
     [MapperIgnoreSource(nameof(NewUserRequest.Password))]
     public static partial UserEntity RequestToUser(NewUserRequest request, string passwordHash);
+    
+    public static partial void UpdateProfileFromRequest(UpdateProfileRequest request, UserEntity target);
+
+    public static partial void UpdateProfileFromRequest(UpdateUserRequest request, UserEntity target);
+
+    
+    public static partial UserResponseDto UserToResponse(UserEntity user);
 
     // Método de soporte para asegurar que el hash se asigne correctamente
     // Mapperly llamará a este método automáticamente al final del mapeo de UserEntity

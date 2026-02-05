@@ -22,7 +22,7 @@ public class CredentialService : ICredentialService
             new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(ClaimTypes.Role, "Admin"),
+            new(ClaimTypes.Role, user.Role?.Name ?? "User"),
             new("FullName", user.FullName ?? string.Empty)
         };
 
