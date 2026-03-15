@@ -1,9 +1,7 @@
-﻿using PACHA_FIT.Core.Application.User.Mappers;
+using PACHA_FIT.Core.Application.User.Mappers;
 using PACHA_FIT.Core.Domain.Shared;
-using PACHA_FIT.Core.Domain.Shared.Dtos;
-using PACHA_FIT.Core.Domain.User.Dtos;
+using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
-using PACHA_FIT.Core.Domain.User.Specifications;
 
 namespace PACHA_FIT.Core.Application.User;
 
@@ -18,29 +16,30 @@ public class AuthService : IAuthService
         _userRepository = userRepository;
     }
 
-    public async Task<ResultDto<LoginResponse>> LoginUser(LoginRequest request)
+    public async Task<Result<AuthSession>> LoginUser(AuthCredentials credentials)
     {
-        var user = await _userRepository.GetOneAsync(new UserByEmailSpecification(request.Username));
-        if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
+        var user = await _userRepository.GetInternalUserAsync(credentials.Username);
+        if (user == null || !VerifyPassword(credentials.Password, user.PasswordHash))
         {
-            return ResultDto<LoginResponse>.Failure("Credenciales incorrectas", ErrorCodes.Unauthorized);
+            return Result<AuthSession>.Failure("Credenciales incorrectas", ErrorCodes.Unauthorized);
         }
 
         var token = _credentialService.GenerateToken(user);
-        var response = UserMapper.UserToLoginResponse(user, token);
-        return ResultDto<LoginResponse>.Success(response);
+        var session = UserMapper.UserToAuthSession(user, token);
+        return Result<AuthSession>.Success(session);
     }
 
-    public async Task<ResultDto<string>> SignUp(NewUserRequest request)
+    public async Task<Result<string>> SignUp(NewUserRegistration registration)
     {
-        var existingUser = await _userRepository.GetOneAsync(new UserByEmailSpecification(request.Email));
+        var existingUser = await _userRepository.GetInternalUserAsync(registration.Email);
         if (existingUser != null)
         {
-            return ResultDto<string>.Failure("El usuario ya existe", ErrorCodes.Conflict);
+            return Result<string>.Failure("El usuario ya existe", ErrorCodes.Conflict);
         }
 
-        await _userRepository.SaveUser(UserMapper.RequestToUser(request, HashPassword(request.Password)));
-        return ResultDto<string>.Success("Usuario registrado correctamente");
+        var user = UserMapper.RegistrationToUser(registration, HashPassword(registration.Password));
+        await _userRepository.SaveUser(user);
+        return Result<string>.Success("Usuario registrado correctamente");
     }
 
     private string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);

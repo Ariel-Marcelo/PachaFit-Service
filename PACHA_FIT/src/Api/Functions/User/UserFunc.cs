@@ -1,16 +1,17 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using PACHA_FIT.Api.Shared;
+using PACHA_FIT.Core.Domain.Generated;
 using PACHA_FIT.Core.Domain.Shared;
-using PACHA_FIT.Core.Domain.Shared.Dtos;
-using PACHA_FIT.Core.Domain.User.Dtos;
+using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
+using System.Threading.Tasks;
 
 namespace PACHA_FIT.Api.Functions.User;
 
-public class UserFunc
+public class UserFunc : UserControllerBase
 {
     private readonly ILogger<UserFunc> _logger;
     private readonly IUserService _userService;
@@ -23,26 +24,16 @@ public class UserFunc
 
     [Function("GetUsers")]
     [PachaAuthorize(Roles = "Admin")]
-    public async Task<ResultDto<UserResponseDto>> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+    public async Task<ResultDtoOfUserResponseDto> RunGetUsers(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users")] HttpRequest req)
     {
-        string? emailFilter = req.Query["email"];
-        if (string.IsNullOrEmpty(emailFilter))
-        {
-             return ResultDto<UserResponseDto>.Failure("El email es requerido", 400);
-        }
-
-        var filter = new UserSearchingRequest
-        {
-            Email = emailFilter
-        };
-
-        return await _userService.GetUserAsync(filter);
+        string? email = req.Query["email"];
+        return await this.GetUsers(email);
     }
 
-    [Function("UpdateUser")]
+    [Function("UpdateProfile")]
     [PachaAuthorize]
-    public async Task<ResultDto<string>> UpdateProfile(
+    public async Task<ResultDtoOfString> RunUpdateProfile(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "profile/{userId}")] HttpRequest req, 
         string userId,
         FunctionContext executionContext)
@@ -52,21 +43,16 @@ public class UserFunc
 
         if (currentUserId != userId)
         {
-             return ResultDto<string>.Failure("No tienes permisos para modificar este perfil", 403);
+             return new ResultDtoOfString { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = 403 };
         }
 
         var request = await req.ReadFromJsonAsync<UpdateProfileRequest>();
-        if (request == null) return ResultDto<string>.Failure("Petición sin body", 400);
-
-        ObjectValidator.Validate(request);
-        
-        await _userService.UpdateUser(request, userId);
-        return ResultDto<string>.Success("Usuario actualizado correctamente");
+        return await this.UpdateProfile(userId, request);
     }
     
-    [Function("UpdateUser")]
+    [Function("UpdateUser_Admin")]
     [PachaAuthorize]
-    public async Task<ResultDto<string>> UpdateUser(
+    public async Task<ResultDtoOfString> RunUpdateUserAdmin(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user/{userId}")] HttpRequest req, 
         string userId,
         FunctionContext executionContext)
@@ -76,15 +62,85 @@ public class UserFunc
 
         if (!isAdmin)
         {
-            return ResultDto<string>.Failure("No tienes permisos para modificar este perfil", 403);
+            return new ResultDtoOfString { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = 403 };
         }
 
         var request = await req.ReadFromJsonAsync<UpdateUserRequest>();
-        if (request == null) return ResultDto<string>.Failure("Petición sin body", 400);
+        return await this.UpdateUser(userId, request);
+    }
 
-        ObjectValidator.Validate(request);
+    public override async Task<ResultDtoOfUserResponseDto> GetUsers(string email, CancellationToken cancellationToken = default)
+    {
+        var criteria = new UserSearchCriteria(null, email, null);
+        var result = await _userService.GetUserAsync(criteria);
+
+        return new ResultDtoOfUserResponseDto
+        {
+            IsSuccess = result.IsSuccess,
+            Value = result.Value != null ? MapToResponse(result.Value) : null,
+            Error = result.Error,
+            StatusCode = result.StatusCode
+        };
+    }
+
+    public override async Task<ResultDtoOfString> UpdateProfile(string userId, UpdateProfileRequest body, CancellationToken cancellationToken = default)
+    {
+        if (!int.TryParse(userId, out int id)) return new ResultDtoOfString { IsSuccess = false, Error = "Id inválido", StatusCode = 400 };
+
+        var updateInfo = new UserUpdateInfo(
+            Email: body.Email,
+            FullName: body.FullName,
+            IdentificationType: body.IdentificationType,
+            IdentificationNumber: body.IdentificationNumber,
+            Address: body.Address,
+            PhoneNumber: body.PhoneNumber
+        );
+
+        var result = await _userService.UpdateUser(id, updateInfo);
         
-        await _userService.UpdateUser(request, userId);
-        return ResultDto<string>.Success("Usuario actualizado correctamente");
+        return new ResultDtoOfString
+        {
+            IsSuccess = result.IsSuccess,
+            Value = result.Value,
+            Error = result.Error,
+            StatusCode = result.StatusCode
+        };
+    }
+
+    public override async Task<ResultDtoOfString> UpdateUser(string userId, UpdateUserRequest body, CancellationToken cancellationToken = default)
+    {
+        if (!int.TryParse(userId, out int id)) return new ResultDtoOfString { IsSuccess = false, Error = "Id inválido", StatusCode = 400 };
+
+        var updateInfo = new UserUpdateInfo(
+            RoleId: body.RoleId,
+            IsActive: body.IsActive
+        );
+
+        var result = await _userService.UpdateUser(id, updateInfo);
+
+        return new ResultDtoOfString
+        {
+            IsSuccess = result.IsSuccess,
+            Value = result.Value,
+            Error = result.Error,
+            StatusCode = result.StatusCode
+        };
+    }
+
+    private PACHA_FIT.Core.Domain.Generated.UserResponseDto MapToResponse(PachaUser user)
+    {
+        return new PACHA_FIT.Core.Domain.Generated.UserResponseDto
+        {
+            UserId = user.UserId,
+            Email = user.Email,
+            FullName = user.FullName,
+            RoleId = user.RoleId,
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt,
+            IdentificationType = user.IdentificationType,
+            IdentificationNumber = user.IdentificationNumber,
+            Address = user.Address,
+            PhoneNumber = user.PhoneNumber
+        };
     }
 }

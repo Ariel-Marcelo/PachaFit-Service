@@ -22,13 +22,13 @@ builder.UseMiddleware<ResultMappingMiddleware>();
 // builder.Services
 //     .AddApplicationInsightsTelemetryWorkerService()
 //     .ConfigureFunctionsApplicationInsights();
-
+/*
 string connectionString = Environment.GetEnvironmentVariable("SqlConnectionString") 
                           ?? throw new InvalidOperationException("La cadena de conexión 'SqlConnectionString' no está configurada.");
 
 builder.Services.AddDbContext<PachaFitContext>(options =>
     options.UseSqlServer(connectionString));
-
+*/
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();

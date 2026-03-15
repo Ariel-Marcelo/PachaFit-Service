@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PACHA_FIT.Core.Domain.Entities;
-using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Persistence;
 
@@ -15,25 +15,44 @@ public class UserRepository: IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetOneAsync(ISpecification<User> spec)
+    public async Task<PachaUser?> GetOneAsync(UserSearchCriteria criteria)
     {
-        var query = _context.Users.AsQueryable();
+        IQueryable<User> query = _context.Users.Include(u => u.Role);
 
-        query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
+        if (criteria.UserId.HasValue)
+            query = query.Where(u => u.UserId == criteria.UserId.Value);
+        
+        if (!string.IsNullOrEmpty(criteria.Email))
+            query = query.Where(u => u.Email == criteria.Email);
+        
+        if (!string.IsNullOrEmpty(criteria.UserName))
+            query = query.Where(u => u.Email == criteria.UserName);
 
-        return await query.FirstOrDefaultAsync(spec.Criteria);
+        var user = await query.FirstOrDefaultAsync();
+        return UserDomainMapper.ToDomain(user);
     }
 
-    public async Task<User> SaveUser(User user)
+    public async Task UpdateUser(int userId, UserUpdateInfo updateInfo)
     {
-        var savedUser = _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return savedUser.Entity;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+        if (user != null)
+        {
+            UserDomainMapper.ApplyUpdate(user, updateInfo);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 
-    public async Task UpdateUser(User user)
+    public async Task<User?> GetInternalUserAsync(string username)
     {
-        _context.Users.Update(user);
+        return await _context.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Email == username);
+    }
+
+    public async Task SaveUser(User user)
+    {
+        _context.Users.Add(user);
         await _context.SaveChangesAsync();
     }
 }

@@ -1,11 +1,10 @@
-﻿using PACHA_FIT.Core.Domain.Shared.Dtos;
-using PACHA_FIT.Core.Domain.User.Dtos;
+using PACHA_FIT.Core.Domain.Shared;
 
 namespace PACHA_FIT.Core.Domain.User.Ports;
 
 public interface IAuthService
 {
-    public Task<ResultDto<LoginResponse>> LoginUser(LoginRequest request);
+    public Task<Result<AuthSession>> LoginUser(AuthCredentials credentials);
     
-    public Task<ResultDto<string>> SignUp(NewUserRequest request);
+    public Task<Result<string>> SignUp(NewUserRegistration registration);
 }

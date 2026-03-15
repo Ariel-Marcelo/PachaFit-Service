@@ -1,4 +1,4 @@
-using PACHA_FIT.Core.Domain.User.Dtos;
+using PACHA_FIT.Core.Domain.User;
 using Riok.Mapperly.Abstractions;
 using UserEntity = PACHA_FIT.Core.Domain.Entities.User;
 
@@ -7,20 +7,16 @@ namespace PACHA_FIT.Core.Application.User.Mappers;
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
 public static partial class UserMapper
 {
-    public static partial LoginResponse UserToLoginResponse(UserEntity user, string token);
+    public static partial AuthSession UserToAuthSession(UserEntity user, string token);
 
-    [MapperIgnoreSource(nameof(NewUserRequest.Password))]
-    public static partial UserEntity RequestToUser(NewUserRequest request, string passwordHash);
+    [MapperIgnoreSource(nameof(NewUserRegistration.Password))]
+    public static partial UserEntity RegistrationToUser(NewUserRegistration registration, string passwordHash);
     
-    public static partial void UpdateProfileFromRequest(UpdateProfileRequest request, UserEntity target);
+    public static partial void UpdateUserFromDomain(UserUpdateInfo info, UserEntity target);
 
-    public static partial void UpdateProfileFromRequest(UpdateUserRequest request, UserEntity target);
-
-    
-    public static partial UserResponseDto UserToResponse(UserEntity user);
+    public static partial PachaUser UserToDomain(UserEntity user);
 
     // Método de soporte para asegurar que el hash se asigne correctamente
-    // Mapperly llamará a este método automáticamente al final del mapeo de UserEntity
     private static void MapPasswordHash(string passwordHash, UserEntity target)
     {
         target.PasswordHash = passwordHash;

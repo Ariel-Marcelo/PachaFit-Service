@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: PachaFit
+  version: 1.0.0
+paths:
+  /profile/{userId}:
+    put:
+      tags:
+        - User
+      summary: Update user profile
+      operationId: User_UpdateProfile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfString'
+  /auth:
+    post:
+      tags:
+        - Auth
+      summary: User login
+      operationId: Auth_Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfLoginResponse'
+  /users:
+    get:
+      tags:
+        - User
+      summary: Get users by criteria
+      operationId: User_GetUsers
+      parameters:
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfUserResponseDto'
+    post:
+      tags:
+        - Auth
+      summary: User registration
+      operationId: Auth_SignUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUserRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfString'
+  /user/{userId}:
+    put:
+      tags:
+        - User
+      summary: Update user (Admin)
+      operationId: User_UpdateUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfString'
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        email:
+          type: string
+        fullName:
+          type: string
+        token:
+          type: string
+        roleName:
+          type: string
+          nullable: true
+    NewUserRequest:
+      type: object
+      required:
+        - email
+        - password
+        - fullName
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        fullName:
+          type: string
+    UpdateProfileRequest:
+      type: object
+      required:
+        - email
+        - fullName
+      properties:
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        identificationType:
+          type: string
+          nullable: true
+        identificationNumber:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+    UpdateUserRequest:
+      type: object
+      properties:
+        roleId:
+          type: integer
+          nullable: true
+        isActive:
+          type: boolean
+          nullable: true
+    UserResponseDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+        email:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        roleId:
+          type: integer
+          nullable: true
+        isActive:
+          type: boolean
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        identificationType:
+          type: string
+          nullable: true
+        identificationNumber:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+    ResultDtoOfString:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          type: integer
+    ResultDtoOfLoginResponse:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/LoginResponse'
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          type: integer
+    ResultDtoOfUserResponseDto:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/UserResponseDto'
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          type: integer
