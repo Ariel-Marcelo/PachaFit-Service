@@ -25,6 +25,33 @@ This project follows an **OpenAPI Design-First** approach. All API endpoints, re
 
 ---
 
+### 🗄️ Database Migrations (EF Core)
+
+This project uses Entity Framework Core Migrations to manage the database schema.
+
+#### 🛠️ Prerequisites
+Ensure you have the `dotnet-ef` tool installed globally:
+```powershell
+dotnet tool install --global dotnet-ef
+```
+
+#### 💻 Useful Commands
+
+| Action | Command |
+| :--- | :--- |
+| **Add a new migration** | `dotnet ef migrations add NameOfMigration --project PACHA_FIT` |
+| **Update Local Database** | `dotnet ef database update --project PACHA_FIT` |
+| **Update Azure Database** | `dotnet ef database update --project PACHA_FIT --connection "YOUR_AZURE_CONNECTION_STRING"` |
+| **Remove last migration** | `dotnet ef migrations remove --project PACHA_FIT` |
+| **Generate SQL Script** | `dotnet ef migrations script --project PACHA_FIT` |
+
+#### ⚠️ Configuration
+*   **Local Development**: Add your connection string to `PACHA_FIT/local.settings.json` under the key `"SqlConnectionString"`.
+*   **Azure Deployment**: Add an Application Setting named `SqlConnectionString` in the Azure Portal.
+*   **Design-Time**: The `PachaFitContextFactory` class allows generating migrations without a live database connection.
+
+---
+
 ### 🌐 Swagger UI
 
 You can visualize and test your endpoints using the built-in Swagger UI:

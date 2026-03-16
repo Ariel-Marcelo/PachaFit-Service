@@ -18,20 +18,20 @@ builder.UseMiddleware<CustomAuthenticationMiddleware>();
 builder.UseMiddleware<CustomAuthorizationMiddleware>();
 builder.UseMiddleware<ResultMappingMiddleware>();
 
-// Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4.
+// Application Insights
 // builder.Services
 //     .AddApplicationInsightsTelemetryWorkerService()
 //     .ConfigureFunctionsApplicationInsights();
-/*
+
 string connectionString = Environment.GetEnvironmentVariable("SqlConnectionString") 
                           ?? throw new InvalidOperationException("La cadena de conexión 'SqlConnectionString' no está configurada.");
 
 builder.Services.AddDbContext<PachaFitContext>(options =>
     options.UseSqlServer(connectionString));
-*/
-builder.Services.AddSingleton<IAuthService, AuthService>();
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<ICredentialService, CredentialService>();
 
 builder.Build().Run();
