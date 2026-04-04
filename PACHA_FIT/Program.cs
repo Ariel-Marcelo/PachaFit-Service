@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PACHA_FIT.Api.Functions.Middlewares;
+using PACHA_FIT.Api.Middlewares;
 using PACHA_FIT.Core.Application.Shared;
 using PACHA_FIT.Core.Application.User;
 using PACHA_FIT.Core.Domain.User.Ports;

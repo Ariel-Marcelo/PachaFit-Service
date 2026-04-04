@@ -5,11 +5,11 @@ namespace PACHA_FIT.Infrastructure.Repositories;
 
 public static class UserDomainMapper
 {
-    public static PachaUser? ToDomain(User? user)
+    public static UserRequests? ToDomain(User? user)
     {
         if (user == null) return null;
 
-        return new PachaUser(
+        return new UserRequests(
             user.UserId,
             user.Email,
             user.FullName,

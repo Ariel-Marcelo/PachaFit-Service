@@ -1,6 +1,6 @@
 namespace PACHA_FIT.Core.Domain.User;
 
-public record PachaUser(
+public record UserRequests(
     int UserId,
     string Email,
     string? FullName,

@@ -4,7 +4,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using PACHA_FIT.Api.Shared;
 
-namespace PACHA_FIT.Api.Functions.Middlewares;
+namespace PACHA_FIT.Api.Middlewares;
 
 public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
 {

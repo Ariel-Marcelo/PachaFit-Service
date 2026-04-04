@@ -15,7 +15,7 @@ public class UserRepository: IUserRepository
         _context = context;
     }
 
-    public async Task<PachaUser?> GetOneAsync(UserSearchCriteria criteria)
+    public async Task<UserRequests?> GetOneAsync(UserSearchCriteria criteria)
     {
         IQueryable<User> query = _context.Users.Include(u => u.Role);
 

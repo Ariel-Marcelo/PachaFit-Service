@@ -13,16 +13,16 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    public async Task<Result<PachaUser>> GetUserAsync(UserSearchCriteria criteria)
+    public async Task<Result<UserRequests>> GetUserAsync(UserSearchCriteria criteria)
     {
         var user = await _userRepository.GetOneAsync(criteria);
         
         if (user == null)
         {
-            return Result<PachaUser>.Failure($"Usuario no encontrado para el criterio especificado.", ErrorCodes.NotFound);
+            return Result<UserRequests>.Failure($"Usuario no encontrado para el criterio especificado.", ErrorCodes.NotFound);
         }
 
-        return Result<PachaUser>.Success(user);
+        return Result<UserRequests>.Success(user);
     }
 
     public async Task<Result<string>> UpdateUser(int userId, UserUpdateInfo updateInfo)

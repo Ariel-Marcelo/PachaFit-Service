@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using PACHA_FIT.Api.Shared;
+using PACHA_FIT.Core.Application.User;
 using PACHA_FIT.Core.Domain.Generated;
 using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
@@ -24,8 +25,8 @@ public class UserFunc : UserControllerBase
     public async Task<ResultDtoOfUserResponseDto> RunGetUsers(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/users")] HttpRequest req)
     {
-        string? email = req.Query["email"];
-        return await this.GetUsers(email);
+        SearchingUser filters = QueryMapper.Map<SearchingUser>(req);
+        return await this.GetUsers(filters.Email);
     }
 
     [Function("UpdateProfile")]
@@ -124,20 +125,20 @@ public class UserFunc : UserControllerBase
         };
     }
 
-    private PACHA_FIT.Core.Domain.Generated.UserResponseDto MapToResponse(PachaUser user)
+    private PACHA_FIT.Core.Domain.Generated.UserResponseDto MapToResponse(UserRequests userRequests)
     {
         return new PACHA_FIT.Core.Domain.Generated.UserResponseDto
         {
-            UserId = user.UserId,
-            Email = user.Email,
-            FullName = user.FullName,
-            RoleId = user.RoleId,
-            IsActive = user.IsActive,
-            CreatedAt = user.CreatedAt,
-            IdentificationType = user.IdentificationType,
-            IdentificationNumber = user.IdentificationNumber,
-            Address = user.Address,
-            PhoneNumber = user.PhoneNumber
+            UserId = userRequests.UserId,
+            Email = userRequests.Email,
+            FullName = userRequests.FullName,
+            RoleId = userRequests.RoleId,
+            IsActive = userRequests.IsActive,
+            CreatedAt = userRequests.CreatedAt,
+            IdentificationType = userRequests.IdentificationType,
+            IdentificationNumber = userRequests.IdentificationNumber,
+            Address = userRequests.Address,
+            PhoneNumber = userRequests.PhoneNumber
         };
     }
 }

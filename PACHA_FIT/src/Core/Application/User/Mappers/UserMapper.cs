@@ -14,7 +14,7 @@ public static partial class UserMapper
     
     public static partial void UpdateUserFromDomain(UserUpdateInfo info, UserEntity target);
 
-    public static partial PachaUser UserToDomain(UserEntity user);
+    public static partial UserRequests UserToDomain(UserEntity user);
 
     // Método de soporte para asegurar que el hash se asigne correctamente
     private static void MapPasswordHash(string passwordHash, UserEntity target)
