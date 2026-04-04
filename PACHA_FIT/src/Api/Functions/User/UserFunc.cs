@@ -4,10 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using PACHA_FIT.Api.Shared;
 using PACHA_FIT.Core.Domain.Generated;
-using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
-using System.Threading.Tasks;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -23,9 +21,8 @@ public class UserFunc : UserControllerBase
     }
 
     [Function("GetUsers")]
-    [PachaAuthorize(Roles = "Admin")]
     public async Task<ResultDtoOfUserResponseDto> RunGetUsers(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/users")] HttpRequest req)
     {
         string? email = req.Query["email"];
         return await this.GetUsers(email);
@@ -34,7 +31,7 @@ public class UserFunc : UserControllerBase
     [Function("UpdateProfile")]
     [PachaAuthorize]
     public async Task<ResultDtoOfString> RunUpdateProfile(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "profile/{userId}")] HttpRequest req, 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/profile/{userId}")] HttpRequest req, 
         string userId,
         FunctionContext executionContext)
     {
@@ -53,7 +50,7 @@ public class UserFunc : UserControllerBase
     [Function("UpdateUser_Admin")]
     [PachaAuthorize]
     public async Task<ResultDtoOfString> RunUpdateUserAdmin(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "user/{userId}")] HttpRequest req, 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/user/{userId}")] HttpRequest req, 
         string userId,
         FunctionContext executionContext)
     {

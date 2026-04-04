@@ -23,8 +23,19 @@ builder.UseMiddleware<ResultMappingMiddleware>();
 //     .AddApplicationInsightsTelemetryWorkerService()
 //     .ConfigureFunctionsApplicationInsights();
 
-string connectionString = Environment.GetEnvironmentVariable("SqlConnectionString") 
-                          ?? throw new InvalidOperationException("La cadena de conexión 'SqlConnectionString' no está configurada.");
+string? connectionString = Environment.GetEnvironmentVariable("SqlConnectionString");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    bool useAzureSql = Environment.GetEnvironmentVariable("UseAzureSql")?.ToLower() == "true";
+    string connectionStringKey = useAzureSql ? "AzureSqlConnectionString" : "LocalSqlConnectionString";
+    connectionString = Environment.GetEnvironmentVariable(connectionStringKey);
+}
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("La cadena de conexión 'SqlConnectionString', 'LocalSqlConnectionString' o 'AzureSqlConnectionString' no está configurada.");
+}
 
 builder.Services.AddDbContext<PachaFitContext>(options =>
     options.UseSqlServer(connectionString));

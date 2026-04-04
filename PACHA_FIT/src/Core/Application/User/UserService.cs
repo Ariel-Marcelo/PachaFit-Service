@@ -19,7 +19,7 @@ public class UserService : IUserService
         
         if (user == null)
         {
-            return Result<PachaUser>.Failure("Usuario no encontrado", ErrorCodes.NotFound);
+            return Result<PachaUser>.Failure($"Usuario no encontrado para el criterio especificado.", ErrorCodes.NotFound);
         }
 
         return Result<PachaUser>.Success(user);

@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using PACHA_FIT.Api.Shared;
 using PACHA_FIT.Core.Domain.Generated;
-using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
-using System.Threading.Tasks;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -23,7 +20,7 @@ public class AuthenticationFunc : AuthControllerBase
 
     [Function("authentication")]
     public async Task<ResultDtoOfLoginResponse> RunLogin(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/auth")] HttpRequest req)
     {
         var loginData = await req.ReadFromJsonAsync<LoginRequest>();
 
@@ -37,7 +34,7 @@ public class AuthenticationFunc : AuthControllerBase
 
     [Function("SignUp")]
     public async Task<ResultDtoOfString> RunSignUp(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")] HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/users")] HttpRequest req)
     {
         var request = await req.ReadFromJsonAsync<NewUserRequest>();
         
@@ -83,3 +80,4 @@ public class AuthenticationFunc : AuthControllerBase
         };
     }
 }
+    

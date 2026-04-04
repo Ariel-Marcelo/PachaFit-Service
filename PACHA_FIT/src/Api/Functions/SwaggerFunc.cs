@@ -19,24 +19,41 @@ public class SwaggerFunc
     public IActionResult GetSwaggerSpec(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "swagger/spec")] HttpRequest req)
     {
-        // En el modelo aislado, los archivos se copian al directorio base de la aplicación
-        var path = Path.Combine(AppContext.BaseDirectory, "docs", "openapi.yaml");
-        
-        _logger.LogInformation("Intentando leer el archivo OpenAPI desde: {path}", path);
-
-        if (!File.Exists(path))
+        try
         {
-            _logger.LogError("No se encontró el archivo en: {path}", path);
-            return new NotFoundObjectResult($"No se encontró el archivo OpenAPI en {path}");
+            // En el modelo aislado, los archivos se copian al directorio de ejecución
+            var path = Path.Combine(AppContext.BaseDirectory, "docs", "openapi.yaml");
+            
+            _logger.LogInformation("Intentando leer el archivo OpenAPI desde: {path}", path);
+
+            if (!File.Exists(path))
+            {
+                // Intento alternativo por si la estructura de carpetas varía en debug local
+                var alternativePath = Path.Combine(Directory.GetCurrentDirectory(), "docs", "openapi.yaml");
+                if (File.Exists(alternativePath))
+                {
+                    path = alternativePath;
+                }
+                else
+                {
+                    _logger.LogError("No se encontró el archivo en: {path} ni en {alt}", path, alternativePath);
+                    return new NotFoundObjectResult($"No se encontró el archivo OpenAPI en la ruta de ejecución.");
+                }
+            }
+
+            var content = File.ReadAllText(path);
+            return new ContentResult
+            {
+                Content = content,
+                ContentType = "text/yaml",
+                StatusCode = (int)HttpStatusCode.OK
+            };
         }
-
-        var content = File.ReadAllText(path);
-        return new ContentResult
+        catch (Exception ex)
         {
-            Content = content,
-            ContentType = "text/yaml",
-            StatusCode = (int)HttpStatusCode.OK
-        };
+            _logger.LogError(ex, "Error al servir la especificación Swagger");
+            return new BadRequestObjectResult("Error interno al leer la especificación.");
+        }
     }
 
     [Function("SwaggerUi")]

@@ -28,6 +28,7 @@ namespace PACHA_FIT.Core.Domain.Generated
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    [Microsoft.AspNetCore.Mvc.Route("api/v1")]
 
     public abstract class UserControllerBase : Microsoft.AspNetCore.Mvc.ControllerBase
     {
@@ -55,6 +56,7 @@ namespace PACHA_FIT.Core.Domain.Generated
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    [Microsoft.AspNetCore.Mvc.Route("api/v1")]
 
     public abstract class AuthControllerBase : Microsoft.AspNetCore.Mvc.ControllerBase
     {
