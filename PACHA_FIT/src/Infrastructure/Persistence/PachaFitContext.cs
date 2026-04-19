@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PACHA_FIT.Core.Domain.Entities;
+using PACHA_FIT.Infrastructure.Persistence.Entities;
 using PACHA_FIT.src.Core.Domain.Entities;
 
 namespace PACHA_FIT.Infrastructure.Persistence;

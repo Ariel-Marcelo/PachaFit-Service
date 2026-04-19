@@ -2,7 +2,8 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using PACHA_FIT.Api.Shared;
+using PACHA_FIT.Api.Functions;
+using PACHA_FIT.Core.Domain.Shared;
 
 namespace PACHA_FIT.Api.Middlewares;
 
@@ -10,18 +11,16 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
 {
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        // 1. Obtener el atributo de la función
         var targetMethod = context.GetTargetFunctionMethod();
         var authAttribute = targetMethod.GetCustomAttributes(typeof(PachaAuthorizeAttribute), true)
             .FirstOrDefault() as PachaAuthorizeAttribute;
 
         if (authAttribute == null)
         {
-            await next(context); // No requiere autorización
+            await next(context);
             return;
         }
 
-        // 2. Obtener el usuario autenticado (previamente cargado por el CustomAuthenticationMiddleware)
         var user = context.Items["User"] as ClaimsPrincipal;
 
         if (user == null || !user.Identity!.IsAuthenticated)
@@ -30,7 +29,6 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
             return;
         } 
 
-        // 3. Validar Roles
         if (!string.IsNullOrEmpty(authAttribute.Roles))
         {
             var roles = authAttribute.Roles.Split(',');
@@ -52,7 +50,6 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
             var response = request.CreateResponse(System.Net.HttpStatusCode.Unauthorized);
             await response.WriteAsJsonAsync(new { Message = "No autenticado. Token faltante o inválido." });
         
-            // Esto le dice a Azure que no ejecute la función y use esta respuesta
             context.GetInvocationResult().Value = response;
         }
     }

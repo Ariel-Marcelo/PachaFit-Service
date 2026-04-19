@@ -113,7 +113,7 @@ namespace PACHA_FIT.Migrations
                     b.HasIndex(new[] { "Email" }, "UQ__Users__A9D105345028B452")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Account", b =>
@@ -1053,7 +1053,7 @@ namespace PACHA_FIT.Migrations
             modelBuilder.Entity("PACHA_FIT.Core.Domain.Entities.User", b =>
                 {
                     b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Role", "Role")
-                        .WithMany("Users")
+                        .WithMany("User")
                         .HasForeignKey("RoleId")
                         .HasConstraintName("FK__Users__RoleId__4AB81AF0");
 
@@ -1440,7 +1440,7 @@ namespace PACHA_FIT.Migrations
 
             modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Role", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Sale", b =>

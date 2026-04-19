@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using PACHA_FIT.Core.Domain.Generated;
-using PACHA_FIT.Core.Domain.User;
+using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.User.Ports;
+using PACHA_FIT.Infrastructure.Nswag;
+using UserApiMapper = PACHA_FIT.Api.Mappers.UserApiMapper;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -26,8 +27,10 @@ public class AuthenticationFunc : AuthControllerBase
 
         if (loginData == null)
         {
-             return new ResultDtoOfLoginResponse { Error = "Request inválido", StatusCode = 400 };
+             return new ResultDtoOfLoginResponse { Error = "Request inválido", StatusCode = ErrorType.BadRequest };
         }
+        
+        CustomObjectValidator.Validate(loginData);
         
         return await this.Login(loginData);
     }
@@ -40,15 +43,17 @@ public class AuthenticationFunc : AuthControllerBase
         
         if (request == null) 
         {
-            return new ResultDtoOfString { Error = "Petición sin body", StatusCode = 400 };
+            return new ResultDtoOfString { Error = "Petición sin body", StatusCode = ErrorType.BadRequest };
         }
+
+        CustomObjectValidator.Validate(request);
     
         return await this.SignUp(request);
     }
 
     public override async Task<ResultDtoOfLoginResponse> Login(LoginRequest body, CancellationToken cancellationToken = default)
     {
-        var credentials = new AuthCredentials(body.Username, body.Password);
+        var credentials = UserApiMapper.LoginRequestToCredentials(body);
         var result = await _authService.LoginUser(credentials);
 
         return new ResultDtoOfLoginResponse
@@ -68,7 +73,7 @@ public class AuthenticationFunc : AuthControllerBase
 
     public override async Task<ResultDtoOfString> SignUp(NewUserRequest body, CancellationToken cancellationToken = default)
     {
-        var registration = new NewUserRegistration(body.Email, body.Password, body.FullName);
+        var registration = UserApiMapper.NewUserRequestToRegistration(body);
         var result = await _authService.SignUp(registration);
 
         return new ResultDtoOfString

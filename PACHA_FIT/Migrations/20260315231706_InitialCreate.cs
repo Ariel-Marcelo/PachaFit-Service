@@ -142,7 +142,7 @@ namespace PACHA_FIT.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "User",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
@@ -266,12 +266,12 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__Accountin__Close__0E391C95",
                         column: x => x.ClosedBy,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                     table.ForeignKey(
                         name: "FK__Accountin__LastR__0F2D40CE",
                         column: x => x.LastReopenedBy,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -296,7 +296,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__AuditLogs__UserI__72910220",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -331,7 +331,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__Sales__UserId__70DDC3D8",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -450,7 +450,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__CreditNot__UserI__6AEFE058",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -880,12 +880,12 @@ namespace PACHA_FIT.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
-                table: "Users",
+                table: "User",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "UQ__Users__A9D105345028B452",
-                table: "Users",
+                table: "User",
                 column: "Email",
                 unique: true);
         }
@@ -957,7 +957,7 @@ namespace PACHA_FIT.Migrations
                 name: "PaymentMethods");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Roles");
