@@ -48,4 +48,25 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddSingleton<IPasswordService, BCryptPasswordService>();
 
-builder.Build().Run();
+var host = builder.Build();
+
+// Aplicar migraciones automáticamente
+using (var scope = host.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<PachaFitContext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log error if needed, for now just continue
+        Console.WriteLine($"Error applying migrations: {ex.Message}");
+    }
+}
+
+host.Run();

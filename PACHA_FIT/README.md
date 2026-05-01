@@ -33,15 +33,23 @@ Si recibes un error 404, verifica:
 
 ### Aplicar Migraciones de Base de Datos
 
-Una vez que los contenedores estén arriba, debes aplicar las migraciones para crear las tablas en el SQL Server de Docker. Puedes hacerlo de dos maneras:
+Para que la base de datos esté sincronizada con el código, debes aplicar las migraciones.
 
-#### Opción A: Desde tu máquina local (si tienes dotnet-ef instalado)
+#### Requisito: Instalar dotnet-ef (Versión 9 recomendada)
+Si no tienes la herramienta instalada, ejecúta:
+```bash
+dotnet tool install --global dotnet-ef --version 9.*
+```
+*Nota: Aunque el proyecto use .NET 8, puedes usar la herramienta v9 para gestionar las migraciones.*
+
+#### Opción A: Desde tu máquina local
+Ejecuta el siguiente comando en la carpeta `PACHA_FIT`:
 ```bash
 dotnet ef database update --connection "Server=localhost;Database=PACHA_FIT;User ID=sa;Password=YourStrong!Passw0rd123;Encrypt=False;TrustServerCertificate=True;"
 ```
 
-#### Opción B: Ejecutar migraciones automáticamente al iniciar (Próximamente)
-Por ahora, se recomienda la Opción A o ejecutar el script SQL generado.
+#### Opción B: Ejecución Automática (Recomendado)
+La aplicación está configurada para aplicar las migraciones automáticamente al iniciar el contenedor `app`. Solo asegúrate de que el contenedor `db` esté saludable.
 
 ---
 

@@ -15,7 +15,7 @@ RUN dotnet restore "PACHA_FIT.csproj"
 COPY . .
 
 # Build and publish
-# We use -v q to keep output clean, but ensure it's a Release build
+FROM build AS publish
 RUN dotnet publish "PACHA_FIT.csproj" -c Release -o /app/publish
 
 # Final image
