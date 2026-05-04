@@ -30,20 +30,47 @@ This project follows an **OpenAPI Design-First** approach. All API endpoints, re
 This project uses Entity Framework Core Migrations to manage the database schema.
 
 #### 🛠️ Prerequisites
-Ensure you have the `dotnet-ef` tool installed globally:
+This project uses **Local Dotnet Tools**. Before running any command, restore them once:
 ```powershell
-dotnet tool install --global dotnet-ef
+dotnet tool restore
 ```
 
 #### 💻 Useful Commands
 
 | Action | Command |
 | :--- | :--- |
-| **Add a new migration** | `dotnet ef migrations add NameOfMigration --project PACHA_FIT` |
-| **Update Local Database** | `dotnet ef database update --project PACHA_FIT` |
-| **Update Azure Database** | `dotnet ef database update --project PACHA_FIT --connection "YOUR_AZURE_CONNECTION_STRING"` |
-| **Remove last migration** | `dotnet ef migrations remove --project PACHA_FIT` |
-| **Generate SQL Script** | `dotnet ef migrations script --project PACHA_FIT` |
+| **Add a new migration** | `dotnet dotnet-ef migrations add NameOfMigration --project PACHA_FIT` |
+| **Update Local Database** | `dotnet dotnet-ef database update --project PACHA_FIT` |
+| **Update Azure Database** | `dotnet dotnet-ef database update --project PACHA_FIT --connection "YOUR_AZURE_CONNECTION_STRING"` |
+
+---
+
+### 🧪 BDD Testing & Quality
+
+We use **Behavior-Driven Development (BDD)** with **Reqnroll** and **NUnit** to ensure the business logic is correctly implemented and verified.
+
+#### 🚀 Running Tests and Coverage
+
+To execute all BDD tests and generate a professional code coverage report, use the provided helper script:
+
+```powershell
+./run-tests.ps1
+```
+
+This script will:
+1. Build the project.
+2. Execute all tests in the `PACHA_FIT.BddTests` project.
+3. Collect code coverage data.
+4. Generate an interactive HTML report at `./TestResults/CoverageReport/index.html`.
+
+#### 📂 Test Organization
+*   **Features**: Located in `PACHA_FIT.BddTests/Features/`. Files are organized by domain (e.g., `User/`).
+*   **Steps**: Located in `PACHA_FIT.BddTests/Steps/`. Contains the implementation of the Gherkin steps.
+
+#### ⚠️ Git Guidelines
+*   **Do NOT commit** `.feature.cs` files. They are automatically generated during build.
+*   The project is configured to ignore these files via `.gitignore`.
+
 
 #### ⚠️ Configuration
 *   **Local Development**: Add your connection string to `PACHA_FIT/local.settings.json` under the key `"SqlConnectionString"`.

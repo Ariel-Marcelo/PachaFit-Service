@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Exclude>[PACHA_FIT]PACHA_FIT.Api*,[PACHA_FIT]PACHA_FIT.Infrastructure*,[PACHA_FIT]PACHA_FIT.Migrations*,[PACHA_FIT]*.Generated*</Exclude>
+          <ExcludeByFile>**/src/Api/**/*.cs,**/src/Infrastructure/**/*.cs,**/Migrations/**/*.cs,**/*.Generated.cs</ExcludeByFile>
+          <ExcludeByAttribute>ExcludeFromCodeCoverage</ExcludeByAttribute>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
