@@ -5,8 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Exclude>[PACHA_FIT]PACHA_FIT.Api*,[PACHA_FIT]PACHA_FIT.Infrastructure*,[PACHA_FIT]PACHA_FIT.Migrations*,[PACHA_FIT]*.Generated*</Exclude>
-          <ExcludeByFile>**/src/Api/**/*.cs,**/src/Infrastructure/**/*.cs,**/Migrations/**/*.cs,**/*.Generated.cs</ExcludeByFile>
+          <Include>[PACHA_FIT]*</Include>
           <ExcludeByAttribute>ExcludeFromCodeCoverage</ExcludeByAttribute>
         </Configuration>
       </DataCollector>
