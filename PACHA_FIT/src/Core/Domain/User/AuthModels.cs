@@ -23,7 +23,7 @@ public record AuthSession(
         IPasswordService passwordService, 
         ICredentialService credentialService)
     {
-        if (passwordService.VerifyPassword(password, user.PasswordHash))
+        if (!passwordService.VerifyPassword(password, user.PasswordHash))
         {
             return Result<AuthSession>.Failure("Credenciales incorrectas", ErrorType.Unauthorized);
         }
