@@ -25,6 +25,8 @@ public partial class StockMovement
     public int? AdjustmentReasonId { get; set; }
 
     public int? CreditNoteId { get; set; }
+    
+    public DateTime? ExpiryDate { get; set; }
 
     public virtual AdjustmentReason? AdjustmentReason { get; set; }
 

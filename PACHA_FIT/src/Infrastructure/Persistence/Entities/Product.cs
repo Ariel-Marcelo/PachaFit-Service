@@ -28,6 +28,10 @@ public partial class Product
 
     public decimal SalePrice { get; set; }
 
+    public int IvaPercentage { get; set; }
+
+    public bool IsWeightBased { get; set; }
+
     public decimal? StockQty { get; set; }
 
     public decimal? MinStockLevel { get; set; }
