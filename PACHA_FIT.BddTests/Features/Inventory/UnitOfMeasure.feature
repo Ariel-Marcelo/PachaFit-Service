@@ -40,3 +40,15 @@ Feature: UnitOfMeasure
         Given a quantity of 0.5 "qq"
         When I convert the quantity to "g"
         Then the result should be 22700.0
+
+    Scenario: Prevent conversion between incompatible types (Mass to Volume)
+        Given a quantity of 1 "kg"
+        When I try to convert the quantity to "ml"
+        Then the conversion should fail
+        And the error message should be "Incompatibilidad de unidades: no se puede convertir masa a volumen"
+
+    Scenario: Handle rounding precision in conversions
+        Given the unit of measure "Libra" with abbreviation "lb" has factor 454.0
+        And a quantity of 1 "g"
+        When I convert the quantity to "lb"
+        Then the result should be 0.002203 with a precision of 6 decimal places

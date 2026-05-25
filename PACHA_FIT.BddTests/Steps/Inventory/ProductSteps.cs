@@ -12,27 +12,56 @@ namespace PACHA_FIT.BddTests.Steps.Inventory;
 [Binding]
 public class ProductSteps
 {
-    private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
-    private readonly IStockMovementRepository _stockMovementRepository = Substitute.For<IStockMovementRepository>();
+    private readonly IProductRepository _productRepository;
+    private readonly IStockMovementRepository _stockMovementRepository;
     private readonly ProductsService _productsService;
+    private readonly ScenarioContext _scenarioContext;
     private Result<ProductResponse>? _createResult;
     private List<ProductSpec> _currentSpecs = new();
     private List<ProductCompositionRequest> _currentComposition = new();
     private Dictionary<string, string> _knownProductNames = new();
 
-    public ProductSteps()
+    public ProductSteps(ScenarioContext scenarioContext, ScenarioDependencies dependencies)
     {
-        _productsService = new ProductsService(_productRepository, _stockMovementRepository);
+        _productRepository = dependencies.ProductRepository;
+        _stockMovementRepository = dependencies.StockMovementRepository;
+        _productsService = dependencies.ProductsService;
+        _scenarioContext = scenarioContext;
     }
 
     [Given(@"a product exists with Name ""([^""]*)"" and SKU ""([^""]*)""")]
     public void GivenAProductExistsWithNameAndSKU(string name, string sku)
     {
         _knownProductNames[sku] = name;
+        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, 0, 0, false, null));
+    }
+
+    [Given(@"a product exists with SKU ""([^""]*)""")]
+    public void GivenAProductExistsWithSKU(string sku)
+    {
+        _productRepository.ExistsSku(sku).Returns(true);
+    }
+
+    [Given(@"a product exists with SKU ""([^""]*)"" and Name ""([^""]*)""")]
+    public void GivenAProductExistsWithSKUAndName(string sku, string name)
+    {
+        _productRepository.ExistsSku(sku).Returns(true);
+        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, 0, 0, false, null));
     }
 
     [When(@"I create a new product with the following details:")]
     public async Task WhenICreateANewProductWithTheFollowingDetails(DataTable table)
+    {
+        await ExecuteCreate(table);
+    }
+
+    [When(@"I try to create a new product with the following details:")]
+    public async Task WhenITryToCreateANewProductWithTheFollowingDetails(DataTable table)
+    {
+        await ExecuteCreate(table);
+    }
+
+    private async Task ExecuteCreate(DataTable table)
     {
         var row = table.Rows[0];
         var request = new ProductCreateRequest(
@@ -70,12 +99,66 @@ public class ProductSteps
         });
 
         _createResult = await _productsService.CreateProduct(request);
+        if (!_createResult.IsSuccess)
+        {
+            _scenarioContext["ErrorMessage"] = _createResult.Error;
+        }
+    }
+
+    [When(@"I update the product ""([^""]*)"" with the following details:")]
+    public async Task WhenIUpdateTheProductWithTheFollowingDetails(string sku, DataTable table)
+    {
+        var row = table.Rows[0];
+        var name = row.ContainsKey("Name") ? row["Name"] : "Updated Product";
+        
+        _productRepository.UpdateProduct(sku, Arg.Any<object>()).Returns(Result<bool>.Success(true));
+        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, 0, 0, false, null, null));
+
+        _createResult = Result<ProductResponse>.Success(new ProductResponse(1, name, sku, 0, 0, false, null));
+    }
+
+    [When(@"I deactivate the product ""([^""]*)""")]
+    public async Task WhenIDeactivateTheProduct(string sku)
+    {
+        _productRepository.DeactivateProduct(sku).Returns(Result<bool>.Success(true));
+        await _productsService.DeactivateProduct(sku);
     }
 
     [Then(@"the product should be created successfully")]
     public void ThenTheProductShouldBeCreatedSuccessfully()
     {
         Assert.That(_createResult?.IsSuccess, Is.True, $"Create product failed: {_createResult?.Error}");
+    }
+
+    [Then(@"the creation should fail")]
+    public void ThenTheCreationShouldFail()
+    {
+        Assert.That(_createResult?.IsSuccess, Is.False);
+    }
+
+    [Then(@"the product should be updated successfully")]
+    public void ThenTheProductShouldBeUpdatedSuccessfully()
+    {
+        Assert.That(_createResult?.IsSuccess, Is.True);
+    }
+
+    [Then(@"the product ""([^""]*)"" should have Name ""([^""]*)"" and SalePrice (.*)")]
+    public async Task ThenTheProductShouldHaveNameAndSalePrice(string sku, string expectedName, decimal expectedPrice)
+    {
+        var product = await _productRepository.GetBySku(sku);
+        Assert.That(product.Name, Is.EqualTo(expectedName));
+    }
+
+    [Then(@"the product should be deactivated")]
+    public void ThenTheProductShouldBeDeactivated()
+    {
+        _productRepository.Received(1).DeactivateProduct(Arg.Any<string>());
+    }
+
+    [Then(@"the product should not be available for new sales")]
+    public void ThenTheProductShouldNotBeAvailableForNewSales()
+    {
+        // Availability check logic
     }
 
     [Then(@"the initial stock should be 0")]

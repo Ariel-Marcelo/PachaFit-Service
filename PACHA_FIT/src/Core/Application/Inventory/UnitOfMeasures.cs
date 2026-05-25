@@ -33,11 +33,25 @@ public class UnitOfMeasures
 
     public decimal Convert(decimal quantity, string fromUnit, string toUnit)
     {
+        var fromCategory = GetUnitCategory(fromUnit);
+        var toCategory = GetUnitCategory(toUnit);
+
+        if (fromCategory != toCategory)
+        {
+            throw new InvalidOperationException($"Incompatibilidad de unidades: no se puede convertir {fromCategory} a {toCategory}");
+        }
+
         var fromFactor = GetConversionFactor(fromUnit);
         var toFactor = GetConversionFactor(toUnit);
 
-        // This assumes they are in the same category (mass/volume/discrete). 
-        // For a more robust implementation, we would check categories.
         return (quantity * fromFactor) / toFactor;
+    }
+
+    private string GetUnitCategory(string abbreviation)
+    {
+        if (MassFactors.ContainsKey(abbreviation)) return "masa";
+        if (VolumeFactors.ContainsKey(abbreviation)) return "volumen";
+        if (DiscreteFactors.ContainsKey(abbreviation)) return "unidades";
+        throw new ArgumentException($"Unknown unit of measure: {abbreviation}");
     }
 }

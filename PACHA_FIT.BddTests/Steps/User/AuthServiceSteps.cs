@@ -12,17 +12,20 @@ namespace PACHA_FIT.BddTests.Steps.User;
 [Binding]
 public class AuthServiceSteps
 {
-    private readonly ICredentialService _credentialService = Substitute.For<ICredentialService>();
-    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly IPasswordService _passwordService = Substitute.For<IPasswordService>();
+    private readonly ICredentialService _credentialService;
+    private readonly IUserRepository _userRepository;
+    private readonly IPasswordService _passwordService;
     private readonly AuthService _authService;
     
     private Result<AuthSession>? _loginResult;
     private Result<string>? _signUpResult;
 
-    public AuthServiceSteps()
+    public AuthServiceSteps(ScenarioDependencies dependencies)
     {
-        _authService = new AuthService(_credentialService, _userRepository, _passwordService);
+        _credentialService = dependencies.CredentialService;
+        _userRepository = dependencies.UserRepository;
+        _passwordService = dependencies.PasswordService;
+        _authService = dependencies.AuthService;
     }
 
     [Given(@"a user exists with email ""([^""]*)"" and password ""([^""]*)""")]

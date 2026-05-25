@@ -3,6 +3,7 @@ using NSubstitute;
 using PACHA_FIT.Core.Application.Inventory;
 using PACHA_FIT.Core.Domain.Inventory.Dtos;
 using PACHA_FIT.Core.Domain.Inventory.Ports;
+using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 using NUnit.Framework;
 
 namespace PACHA_FIT.BddTests.Steps.Inventory;
@@ -10,16 +11,22 @@ namespace PACHA_FIT.BddTests.Steps.Inventory;
 [Binding]
 public class StockMovementSteps
 {
-    private readonly IProductRepository _productRepository = Substitute.For<IProductRepository>();
-    private readonly IStockMovementRepository _stockMovementRepository = Substitute.For<IStockMovementRepository>();
+    private readonly IProductRepository _productRepository;
+    private readonly IStockMovementRepository _stockMovementRepository;
     private readonly ProductsService _productsService;
     private readonly InventoryService _inventoryService;
+    private readonly ScenarioContext _scenarioContext;
     private List<StockMovementRequest> _recordedRequests = new();
+    private Result<string>? _dispatchResult;
+    private Result<ProductResponse>? _createResult;
 
-    public StockMovementSteps()
+    public StockMovementSteps(ScenarioContext scenarioContext, ScenarioDependencies dependencies)
     {
-        _productsService = new ProductsService(_productRepository, _stockMovementRepository);
-        _inventoryService = new InventoryService(_stockMovementRepository);
+        _productRepository = dependencies.ProductRepository;
+        _stockMovementRepository = dependencies.StockMovementRepository;
+        _productsService = dependencies.ProductsService;
+        _inventoryService = dependencies.InventoryService;
+        _scenarioContext = scenarioContext;
         
         // Capture movements for verification
         _stockMovementRepository.When(x => x.SaveMovement(Arg.Any<StockMovementRequest>()))
@@ -46,7 +53,17 @@ public class StockMovementSteps
             return Task.FromResult(new ProductResponse(1, req.Name, req.SKU, req.InitialStock, 0, false, null));
         });
 
-        await _productsService.CreateProduct(request);
+        _createResult = await _productsService.CreateProduct(request);
+        if (!_createResult.IsSuccess)
+        {
+            _scenarioContext["ErrorMessage"] = _createResult.Error;
+        }
+    }
+
+    [When(@"I try to register a new Kit ""([^""]*)"" with SKU ""([^""]*)"" and initial stock (.*):")]
+    public async Task WhenITryToRegisterANewKitWithSKUAndInitialStock(string name, string xsku, decimal stock, DataTable table)
+    {
+        await WhenIRegisterANewKitWithSKUAndInitialStock(name, xsku, stock, table);
     }
 
     [Then(@"an ""([^""]*)"" movement should be recorded for ""([^""]*)"" with quantity (.*)")]
@@ -56,9 +73,31 @@ public class StockMovementSteps
         Assert.That(exists, Is.True, $"Movement {type} with qty {quantity} not found for {sku}");
     }
 
-    [Given(@"a product exists with SKU ""([^""]*)""")]
-    public void GivenAProductExistsWithSKU(string sku)
+    [Then(@"two ""([^""]*)"" movements should be recorded:")]
+    public void ThenTwoMovementsShouldBeRecorded(string type, DataTable table)
     {
+        foreach (var row in table.Rows)
+        {
+            var qty = decimal.Parse(row["Quantity"]);
+            var expiry = DateTime.Parse(row["ExpiryDate"]);
+            var exists = _recordedRequests.Any(m => m.TypeMovement == type && m.InputQuantity == qty && m.ExpiryDate == expiry);
+            Assert.That(exists, Is.True, $"Movement {type} with qty {qty} and expiry {expiry} not found");
+        }
+    }
+
+    [Given(@"a product exists with SKU ""([^""]*)"" and current stock (.*)")]
+    public void GivenAProductExistsWithSKUAndCurrentStock(string sku, decimal stock)
+    {
+        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, "Test", sku, stock, 0, false, null));
+        _stockMovementRepository.GetAvailableBatches(1).Returns(new List<StockBatchResponse> { 
+            new StockBatchResponse(1, stock, null) 
+        });
+    }
+
+    [Given(@"a product exists with Name ""([^""]*)"" and SKU ""([^""]*)"" with stock (.*) ""([^""]*)""")]
+    public void GivenAProductExistsWithNameAndSKUWithStock(string name, string sku, decimal stock, string unit)
+    {
+        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, stock, 0, false, null));
     }
 
     [Given(@"the following batches exist for ""([^""]*)"":")]
@@ -76,7 +115,35 @@ public class StockMovementSteps
     [When(@"I dispatch (.*) ""([^""]*)"" of ""([^""]*)""")]
     public async Task WhenIDispatchOf(decimal quantity, string unit, string sku)
     {
-        await _inventoryService.DispatchStock(1, quantity, unit);
+        _dispatchResult = await _inventoryService.DispatchStock(1, quantity, unit);
+    }
+
+    [When(@"I try to dispatch (.*) ""([^""]*)"" of ""([^""]*)""")]
+    public async Task WhenITryToDispatchOf(decimal quantity, string unit, string sku)
+    {
+        _dispatchResult = await _inventoryService.DispatchStock(1, quantity, unit);
+        if (!_dispatchResult.IsSuccess)
+        {
+            _scenarioContext["ErrorMessage"] = _dispatchResult.Error;
+        }
+    }
+
+    [Then(@"the dispatch should be successful")]
+    public void ThenTheDispatchShouldBeSuccessful()
+    {
+        Assert.That(_dispatchResult?.IsSuccess, Is.True);
+    }
+
+    [Then(@"the dispatch should fail")]
+    public void ThenTheDispatchShouldFail()
+    {
+        Assert.That(_dispatchResult?.IsSuccess, Is.False);
+    }
+
+    [Then(@"the kit registration should fail")]
+    public void ThenTheKitRegistrationShouldFail()
+    {
+        Assert.That(_createResult?.IsSuccess, Is.False);
     }
 
     [Then(@"the movement should target the batch expiring on ""([^""]*)""")]

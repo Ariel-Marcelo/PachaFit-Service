@@ -4,20 +4,24 @@ using PACHA_FIT.Core.Application.User;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
+using NUnit.Framework;
 
 namespace PACHA_FIT.BddTests.Steps.User;
 
 [Binding]
 public class UserServiceSteps
 {
-    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IUserRepository _userRepository;
     private readonly UserService _userService;
+    private readonly ScenarioContext _scenarioContext;
     private Result<UserRequests>? _getUserResult;
     private Result<string>? _updateUserResult;
 
-    public UserServiceSteps()
+    public UserServiceSteps(ScenarioContext scenarioContext, ScenarioDependencies dependencies)
     {
-        _userService = new UserService(_userRepository);
+        _userRepository = dependencies.UserRepository;
+        _userService = dependencies.UserService;
+        _scenarioContext = scenarioContext;
     }
 
     [Given(@"a user exists with ID (.*) and email ""(.*)""")]
@@ -44,6 +48,10 @@ public class UserServiceSteps
     public async Task WhenIRequestTheUserWithID(int userId)
     {
         _getUserResult = await _userService.GetUserAsync(new UserSearchCriteria(userId, null, null));
+        if (!_getUserResult.IsSuccess)
+        {
+            _scenarioContext["ErrorMessage"] = _getUserResult.Error;
+        }
     }
 
     [When(@"I update the user with ID (.*) with new info:")]
@@ -56,6 +64,10 @@ public class UserServiceSteps
         );
 
         _updateUserResult = await _userService.UpdateUser(userId, updateInfo);
+        if (!_updateUserResult.IsSuccess)
+        {
+            _scenarioContext["ErrorMessage"] = _updateUserResult.Error;
+        }
     }
 
     [Then(@"the result should be successful")]
@@ -86,13 +98,6 @@ public class UserServiceSteps
     public void ThenTheUpdateResultShouldBeAFailure()
     {
         Assert.That(_updateUserResult?.IsSuccess, Is.False);
-    }
-
-    [Then(@"the error message should be ""(.*)""")]
-    public void ThenTheErrorMessageShouldBe(string errorMessage)
-    {
-        var actualError = _getUserResult != null ? _getUserResult.Error : _updateUserResult?.Error;
-        Assert.That(actualError, Is.EqualTo(errorMessage));
     }
 
     [Then(@"the user update should be persisted")]

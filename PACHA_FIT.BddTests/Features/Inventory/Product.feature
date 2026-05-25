@@ -41,3 +41,37 @@ Feature: Product Management
             | BaseProductName | Quantity | UnitAbbreviation |
             | Chía            | 100      | g                |
             | Nueces          | 100      | g                |
+
+    Scenario: Prevent creating a product with a duplicate SKU
+        Given a product exists with SKU "PROT-001"
+        When I try to create a new product with the following details:
+            | Name            | SKU      | SalePrice |
+            | Premium Protein | PROT-001 | 50.00     |
+        Then the creation should fail
+        And the error message should be "El SKU ya existe"
+
+    Scenario Outline: Prevent negative prices
+        When I try to create a new product with the following details:
+            | Name    | SKU      | CostPrice   | SalePrice   |
+            | Product | TEST-001 | <CostPrice> | <SalePrice> |
+        Then the creation should fail
+        And the error message should be "El precio no puede ser negativo"
+
+        Examples:
+            | CostPrice | SalePrice |
+            | -1.00     | 10.00     |
+            | 10.00     | -5.00     |
+
+    Scenario: Update product basic details
+        Given a product exists with SKU "PROT-001" and Name "Old Protein"
+        When I update the product "PROT-001" with the following details:
+            | Name        | SalePrice |
+            | New Protein | 55.00     |
+        Then the product should be updated successfully
+        And the product "PROT-001" should have Name "New Protein" and SalePrice 55.00
+
+    Scenario: Deactivate a product
+        Given a product exists with SKU "PROT-001"
+        When I deactivate the product "PROT-001"
+        Then the product should be deactivated
+        And the product should not be available for new sales

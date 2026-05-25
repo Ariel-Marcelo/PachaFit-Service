@@ -19,6 +19,12 @@ public class InventoryService
             .OrderBy(b => b.ExpiryDate ?? DateTime.MaxValue)
             .ToList();
 
+        decimal totalAvailable = batches.Sum(b => b.AvailableQty);
+        if (totalAvailable < quantity)
+        {
+            return Result<string>.Failure("Stock insuficiente para completar el despacho", PACHA_FIT.Core.Domain.Shared.ErrorType.Validation);
+        }
+
         decimal remainingToDispatch = quantity;
 
         foreach (var batch in batches)
@@ -38,11 +44,6 @@ public class InventoryService
             ));
 
             remainingToDispatch -= dispatchFromThisBatch;
-        }
-
-        if (remainingToDispatch > 0)
-        {
-            return Result<string>.Failure("Stock insuficiente para completar el despacho", PACHA_FIT.Core.Domain.Shared.ErrorType.Validation);
         }
 
         return Result<string>.Success("Despacho completado exitosamente");

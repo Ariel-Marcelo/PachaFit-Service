@@ -27,8 +27,8 @@ Feature: StockMovement
             | Ingreso | 2        | lb   | 908             |
 
     Scenario: Register composite product (Kit) assembly
-        Given a product exists with Name "Chía" and SKU "CHIA-001"
-        And a product exists with Name "Nueces" and SKU "NUE-001"
+        Given a product exists with Name "Chía" and SKU "CHIA-001" with stock 1000 "g"
+        And a product exists with Name "Nueces" and SKU "NUE-001" with stock 1000 "g"
         When I register a new Kit "Mix Saludable" with SKU "MIX-001" and initial stock 5:
             | BaseProductSku | Quantity | Unit |
             | CHIA-001       | 100      | g    |
@@ -46,5 +46,41 @@ Feature: StockMovement
         When I dispatch 1 "qq" of "ARR-001"
         Then an "Egreso" movement should be recorded for "ARR-001" with quantity 1
         And the movement should target the batch expiring on "2026-06-01"
+
+    Scenario: Prevent dispatch when stock is insufficient
+        Given a product exists with SKU "PROT-001" and current stock 5
+        When I try to dispatch 10 "u" of "PROT-001"
+        Then the dispatch should fail
+        And the error message should be "Stock insuficiente para completar el despacho"
+
+    Scenario: FEFO Split Dispatch across multiple batches
+        Given a product exists with Name "Arroz" and SKU "ARR-001"
+        And the following batches exist for "ARR-001":
+            | Quantity | Unit | ExpiryDate |
+            | 6        | kg   | 2026-05-01 |
+            | 10       | kg   | 2026-06-01 |
+        When I dispatch 10 "kg" of "ARR-001"
+        Then the dispatch should be successful
+        And two "Egreso" movements should be recorded:
+            | Quantity | ExpiryDate |
+            | 6        | 2026-05-01 |
+            | 4        | 2026-06-01 |
+
+    Scenario: Prevent kit assembly if base products have insufficient stock
+        Given a product exists with Name "Chía" and SKU "CHIA-001" with stock 200 "g"
+        And a product exists with Name "Nueces" and SKU "NUE-001" with stock 1000 "g"
+        When I try to register a new Kit "Mix Saludable" with SKU "MIX-001" and initial stock 5:
+            | BaseProductSku | Quantity | Unit |
+            | CHIA-001       | 100      | g    |
+            | NUE-001        | 100      | g    |
+        Then the kit registration should fail
+        And the error message should include "Stock insuficiente de Chía"
+
+    Scenario: Prevent kit assembly if base product does not exist
+        When I try to register a new Kit "Mix Saludable" with SKU "MIX-001" and initial stock 5:
+            | BaseProductSku | Quantity | Unit |
+            | NON-EXISTENT   | 100      | g    |
+        Then the kit registration should fail
+        And the error message should include "El producto base NON-EXISTENT no existe"
 
 
