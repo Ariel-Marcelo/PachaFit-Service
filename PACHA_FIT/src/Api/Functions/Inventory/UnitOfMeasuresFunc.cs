@@ -10,6 +10,12 @@ public class UnitOfMeasuresFunc
 {
     private readonly ILogger<UnitOfMeasuresFunc> _logger;
     private readonly UnitOfMeasureService _unitOfMeasuresService;
+
+    public UnitOfMeasuresFunc(ILogger<UnitOfMeasuresFunc> logger, UnitOfMeasureService unitOfMeasuresService)
+    {
+        _logger = logger;
+        _unitOfMeasuresService = unitOfMeasuresService;
+    }
     
     [Function("UnitOfMeasuresFunc")]
     public async Task<IResult> GetUnitOfMeasures([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route="/units" )] HttpRequest req)

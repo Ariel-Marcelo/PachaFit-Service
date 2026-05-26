@@ -33,8 +33,8 @@ public record UserUpdateInfo(
 
 public record SearchingUser
 {
-    public string Email {get; init;}
-    public string Role { get; init; }
+    public string Email {get; init;} = null!;
+    public string Role { get; init; } = null!;
 }
 
 public record NewUserRegistration(

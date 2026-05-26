@@ -32,20 +32,20 @@ public class ProductSteps
     public void GivenAProductExistsWithNameAndSKU(string name, string sku)
     {
         _knownProductNames[sku] = name;
-        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, 0, 0, false, null));
+        _ = _productRepository.GetBySku(sku).Returns(Task.FromResult(new ProductResponse(1, name, sku, 0, 0, false, null)));
     }
 
     [Given(@"a product exists with SKU ""([^""]*)""")]
     public void GivenAProductExistsWithSKU(string sku)
     {
-        _productRepository.ExistsSku(sku).Returns(true);
+        _ = _productRepository.ExistsSku(sku).Returns(Task.FromResult(true));
     }
 
     [Given(@"a product exists with SKU ""([^""]*)"" and Name ""([^""]*)""")]
     public void GivenAProductExistsWithSKUAndName(string sku, string name)
     {
-        _productRepository.ExistsSku(sku).Returns(true);
-        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, 0, 0, false, null));
+        _ = _productRepository.ExistsSku(sku).Returns(Task.FromResult(true));
+        _ = _productRepository.GetBySku(sku).Returns(Task.FromResult(new ProductResponse(1, name, sku, 0, 0, false, null)));
     }
 
     [When(@"I create a new product with the following details:")]
@@ -75,7 +75,7 @@ public class ProductSteps
             Composition: _currentComposition.Any() ? _currentComposition : null
         );
 
-        _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(callInfo => 
+        _ = _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(callInfo => 
         {
             var req = callInfo.Arg<ProductCreateRequest>();
             var specsJson = req.Specs != null ? JsonSerializer.Serialize(req.Specs) : null;
@@ -105,13 +105,13 @@ public class ProductSteps
     }
 
     [When(@"I update the product ""([^""]*)"" with the following details:")]
-    public async Task WhenIUpdateTheProductWithTheFollowingDetails(string sku, DataTable table)
+    public void WhenIUpdateTheProductWithTheFollowingDetails(string sku, DataTable table)
     {
         var row = table.Rows[0];
         var name = row.ContainsKey("Name") ? row["Name"] : "Updated Product";
         
-        _productRepository.UpdateProduct(sku, Arg.Any<object>()).Returns(Result<bool>.Success(true));
-        _productRepository.GetBySku(sku).Returns(new ProductResponse(1, name, sku, 0, 0, false, null, null));
+        _ = _productRepository.UpdateProduct(sku, Arg.Any<object>()).Returns(Task.FromResult(Result<bool>.Success(true)));
+        _ = _productRepository.GetBySku(sku).Returns(Task.FromResult(new ProductResponse(1, name, sku, 0, 0, false, null, null)));
 
         _createResult = Result<ProductResponse>.Success(new ProductResponse(1, name, sku, 0, 0, false, null));
     }
@@ -119,7 +119,7 @@ public class ProductSteps
     [When(@"I deactivate the product ""([^""]*)""")]
     public async Task WhenIDeactivateTheProduct(string sku)
     {
-        _productRepository.DeactivateProduct(sku).Returns(Result<bool>.Success(true));
+        _ = _productRepository.DeactivateProduct(sku).Returns(Task.FromResult(Result<bool>.Success(true)));
         await _productsService.DeactivateProduct(sku);
     }
 
@@ -149,9 +149,9 @@ public class ProductSteps
     }
 
     [Then(@"the product should be deactivated")]
-    public void ThenTheProductShouldBeDeactivated()
+    public async Task ThenTheProductShouldBeDeactivated()
     {
-        _productRepository.Received(1).DeactivateProduct(Arg.Any<string>());
+        await _productRepository.Received(1).DeactivateProduct(Arg.Any<string>());
     }
 
     [Then(@"the product should not be available for new sales")]
@@ -167,9 +167,9 @@ public class ProductSteps
     }
 
     [Then(@"a stock movement should be recorded as ""([^""]*)"" with quantity (.*)")]
-    public void ThenAStockMovementShouldBeRecordedAsWithQuantity(string type, decimal quantity)
+    public async Task ThenAStockMovementShouldBeRecordedAsWithQuantity(string type, decimal quantity)
     {
-        _stockMovementRepository.Received(1).SaveMovement(Arg.Is<StockMovementRequest>(m => 
+        await _stockMovementRepository.Received(1).SaveMovement(Arg.Is<StockMovementRequest>(m => 
             m.TypeMovement == type && m.InputQuantity == quantity));
     }
 

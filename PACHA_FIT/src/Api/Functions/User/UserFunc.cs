@@ -45,6 +45,10 @@ public class UserFunc : UserControllerBase
         }
 
         var request = await req.ReadFromJsonAsync<UpdateProfileRequest>();
+        if (request == null)
+        {
+            return new ResultDtoOfString { IsSuccess = false, Error = "Invalid request body", StatusCode = ErrorType.BadRequest };
+        }
         return await this.UpdateProfile(userId, request);
     }
     
@@ -64,6 +68,10 @@ public class UserFunc : UserControllerBase
         }
 
         var request = await req.ReadFromJsonAsync<UpdateUserRequest>();
+        if (request == null)
+        {
+            return new ResultDtoOfString { IsSuccess = false, Error = "Invalid request body", StatusCode = ErrorType.BadRequest };
+        }
         return await this.UpdateUser(userId, request);
     }
 

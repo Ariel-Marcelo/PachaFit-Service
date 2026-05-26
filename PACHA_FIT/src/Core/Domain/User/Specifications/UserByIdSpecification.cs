@@ -6,6 +6,6 @@ public class UserByIdSpecification : BaseSpecification<Infrastructure.Persistenc
 {
     public UserByIdSpecification(int userId) : base(u => u.UserId == userId)
     {
-        AddInclude(u => u.Role);
+        AddInclude(u => u.Role!);
     }
 }
