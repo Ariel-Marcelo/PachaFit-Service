@@ -476,6 +476,7 @@ public partial class PachaFitContext : DbContext
             entity.HasKey(e => e.UnitId).HasName("PK__UnitOfMe__44F5ECB5BFBA4837");
 
             entity.Property(e => e.Abbreviation).HasMaxLength(10);
+            entity.Property(e => e.Category).HasMaxLength(50);
             entity.Property(e => e.ConversionFactor)
                 .HasDefaultValue(1m)
                 .HasColumnType("decimal(18, 8)");

@@ -8,6 +8,8 @@ public partial class UnitOfMeasure
 
     public string Abbreviation { get; set; } = null!;
 
+    public string Category { get; set; } = null!;
+
     public decimal ConversionFactor { get; set; }
 
     public virtual ICollection<ProductComposition> ProductCompositions { get; set; } = new List<ProductComposition>();

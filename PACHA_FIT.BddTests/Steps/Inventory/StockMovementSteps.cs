@@ -154,10 +154,6 @@ public class StockMovementSteps
         Assert.That(exists, Is.True, $"No Egreso movement found for batch expiring on {expiryDate}");
     }
 
-    [Given(@"the unit of measure ""([^""]*)"" with abbreviation ""([^""]*)"" has factor (.*)")]
-    public void GivenTheUnitOfMeasureWithAbbreviationHasFactor(string name, string abbreviation, decimal factor)
-    {
-    }
 
     [When(@"I register a new product ""([^""]*)"" with SKU ""([^""]*)"" and initial stock:")]
     public async Task WhenIRegisterANewProductWithSKUAndInitialStockTable(string name, string sku, DataTable table)

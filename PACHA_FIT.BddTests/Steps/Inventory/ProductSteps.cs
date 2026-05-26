@@ -4,7 +4,6 @@ using PACHA_FIT.Core.Application.Inventory;
 using PACHA_FIT.Core.Domain.Inventory.Dtos;
 using PACHA_FIT.Core.Domain.Inventory.Ports;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
-using NUnit.Framework;
 using System.Text.Json;
 
 namespace PACHA_FIT.BddTests.Steps.Inventory;

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PACHA_FIT.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using PACHA_FIT.Infrastructure.Persistence;
 namespace PACHA_FIT.Migrations
 {
     [DbContext(typeof(PachaFitContext))]
-    partial class PachaFitContextModelSnapshot : ModelSnapshot
+    [Migration("20260526033225_UnitOfMeasuresCategoryParameter")]
+    partial class UnitOfMeasuresCategoryParameter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
