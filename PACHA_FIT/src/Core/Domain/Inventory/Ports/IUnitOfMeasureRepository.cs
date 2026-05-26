@@ -1,8 +1,9 @@
-using PACHA_FIT.Infrastructure.Persistence.Entities;
+using PACHA_FIT.Core.Domain.Inventory.Dtos;
 
 namespace PACHA_FIT.Core.Domain.Inventory.Ports;
 
 public interface IUnitOfMeasureRepository
 {
-    Task<IEnumerable<UnitOfMeasure>> GetAllAsync();
+    Task<IEnumerable<UnitOfMeasureInfo>> GetAllAsync();
+    Task<IEnumerable<UnitOfMeasureInfo>> GetAllActiveAsync();
 }

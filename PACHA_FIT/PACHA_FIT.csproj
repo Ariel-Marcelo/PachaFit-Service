@@ -48,6 +48,10 @@
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\Core\Domain\Inventory\Exceptions\" />
+    <Folder Include="src\Core\Domain\Shared\Exceptions\" />
+  </ItemGroup>
 
   <Target Name="NSwag" BeforeTargets="BeforeBuild">
     <Exec Command="$(NSwagExe_Net80) run nswag.json /variables:Configuration=$(Configuration)" />

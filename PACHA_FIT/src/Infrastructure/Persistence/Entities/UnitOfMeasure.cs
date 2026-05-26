@@ -10,6 +10,8 @@ public partial class UnitOfMeasure
 
     public string Category { get; set; } = null!;
 
+    public bool IsActive { get; set; }
+
     public decimal ConversionFactor { get; set; }
 
     public virtual ICollection<ProductComposition> ProductCompositions { get; set; } = new List<ProductComposition>();

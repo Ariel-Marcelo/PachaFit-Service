@@ -5,25 +5,24 @@
 namespace PACHA_FIT.Migrations
 {
     /// <inheritdoc />
-    public partial class UnitOfMeasuresCategoryParameter : Migration
+    public partial class UnitOfMeasuresIsActiveParameter : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Category",
+            migrationBuilder.AddColumn<bool>(
+                name: "IsActive",
                 table: "UnitOfMeasuresFunc",
-                type: "nvarchar(50)",
-                maxLength: 50,
+                type: "bit",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Category",
+                name: "IsActive",
                 table: "UnitOfMeasuresFunc");
         }
     }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PACHA_FIT.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using PACHA_FIT.Infrastructure.Persistence;
 namespace PACHA_FIT.Migrations
 {
     [DbContext(typeof(PachaFitContext))]
-    partial class PachaFitContextModelSnapshot : ModelSnapshot
+    [Migration("20260526043154_UnitOfMeasuresIsActiveParameter")]
+    partial class UnitOfMeasuresIsActiveParameter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -957,7 +960,7 @@ namespace PACHA_FIT.Migrations
                     b.HasKey("UnitId")
                         .HasName("PK__UnitOfMe__44F5ECB5BFBA4837");
 
-                    b.ToTable("UnitOfMeasuresFunc");
+                    b.ToTable("UnitOfMeasures");
                 });
 
             modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.User", b =>

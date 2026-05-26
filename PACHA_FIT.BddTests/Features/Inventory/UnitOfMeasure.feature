@@ -52,3 +52,10 @@ Feature: UnitOfMeasure
         And a quantity of 1 "g"
         When I convert the quantity to "lb"
         Then the result should be 0.002203 with a precision of 6 decimal places
+
+    Scenario: Retrieve only active units of measure
+        Given the unit of measure "Gramos" with abbreviation "g"
+        And the unit of measure "Antigua Libra" with abbreviation "alb" is inactive
+        When I request all active units of measure
+        Then the list should contain "g"
+        And the list should not contain "alb"

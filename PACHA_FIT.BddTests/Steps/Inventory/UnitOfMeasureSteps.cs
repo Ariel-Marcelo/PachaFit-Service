@@ -1,8 +1,9 @@
 using Reqnroll;
 using NSubstitute;
 using PACHA_FIT.Core.Application.Inventory;
+using PACHA_FIT.Core.Domain.Inventory.Dtos;
 using PACHA_FIT.Core.Domain.Inventory.Ports;
-using PACHA_FIT.Infrastructure.Persistence.Entities;
+using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 using NUnit.Framework;
 
 namespace PACHA_FIT.BddTests.Steps.Inventory;
@@ -13,12 +14,13 @@ public class UnitOfMeasureSteps
     private readonly UnitOfMeasureService _unitService;
     private readonly IUnitOfMeasureRepository _repository;
     private readonly ScenarioContext _scenarioContext;
-    private decimal _currentFactor;
-    private decimal _conversionResult;
+    private Result<decimal>? _currentFactorResult;
+    private Result<decimal>? _conversionResult;
+    private Result<UnitOfMeasureGroupedDto>? _activeUnitsResult;
     private decimal _quantity;
     private string _fromUnit = string.Empty;
     private bool _conversionFailed;
-    private List<UnitOfMeasure> _mockUnits = new();
+    private List<UnitOfMeasureInfo> _mockUnits = new();
 
     public UnitOfMeasureSteps(ScenarioContext scenarioContext, ScenarioDependencies dependencies)
     {
@@ -26,8 +28,12 @@ public class UnitOfMeasureSteps
         _repository = dependencies.UnitOfMeasureRepository;
         _scenarioContext = scenarioContext;
         
-        // Setup repository to return our mock list
-        _repository.GetAllAsync().Returns(Task.FromResult<IEnumerable<UnitOfMeasure>>(_mockUnits));
+        // Setup repository to return only active mock units from the shared list
+        _repository.GetAllActiveAsync().Returns(callInfo => 
+        {
+            var activeUnits = _mockUnits.Where(u => u.IsActive).ToList();
+            return Task.FromResult<IEnumerable<UnitOfMeasureInfo>>(activeUnits);
+        });
     }
 
     [Given(@"the unit of measure ""([^""]*)"" with abbreviation ""([^""]*)""")]
@@ -44,25 +50,63 @@ public class UnitOfMeasureSteps
         if (abbreviation == "kg") factor = 1000.0m;
         if (abbreviation == "L") factor = 1000.0m;
 
-        _mockUnits.Add(new UnitOfMeasure { Name = name, Abbreviation = abbreviation, Category = category, ConversionFactor = factor });
+        _mockUnits.Add(new UnitOfMeasureInfo(name, abbreviation, category, factor, true));
+        _unitService.ClearCache();
+    }
+
+    [Given(@"the unit of measure ""([^""]*)"" with abbreviation ""([^""]*)"" is inactive")]
+    public void GivenTheUnitOfMeasureWithAbbreviationIsInactive(string name, string abbreviation)
+    {
+        _mockUnits.Add(new UnitOfMeasureInfo(name, abbreviation, "masa", 1.0m, false));
+        _unitService.ClearCache();
     }
 
     [Given(@"the unit of measure ""([^""]*)"" with abbreviation ""([^""]*)"" has factor (.*)")]
     public void GivenTheUnitOfMeasureWithAbbreviationHasFactor(string name, string abbreviation, decimal factor)
     {
-        _mockUnits.Add(new UnitOfMeasure { Name = name, Abbreviation = abbreviation, Category = "masa", ConversionFactor = factor });
+        _mockUnits.Add(new UnitOfMeasureInfo(name, abbreviation, "masa", factor, true));
+        _unitService.ClearCache();
     }
 
     [When(@"I check the conversion factor for ""([^""]*)""")]
     public async Task WhenICheckTheConversionFactorFor(string abbreviation)
     {
-        _currentFactor = await _unitService.GetConversionFactor(abbreviation);
+        _currentFactorResult = await _unitService.GetConversionFactor(abbreviation);
+    }
+
+    [When(@"I request all active units of measure")]
+    public async Task WhenIRequestAllActiveUnitsOfMeasure()
+    {
+        _activeUnitsResult = await _unitService.GetAllActiveUnitsAsync();
+    }
+
+    [Then(@"the list should contain ""([^""]*)""")]
+    public void ThenTheListShouldContain(string abbreviation)
+    {
+        Assert.That(_activeUnitsResult?.IsSuccess, Is.True);
+        var dto = _activeUnitsResult!.Value!;
+        var exists = dto.MassUnits.Any(u => u.Abbreviation == abbreviation) ||
+                     dto.VolumeUnits.Any(u => u.Abbreviation == abbreviation) ||
+                     dto.DiscreteUnits.Any(u => u.Abbreviation == abbreviation);
+        Assert.That(exists, Is.True);
+    }
+
+    [Then(@"the list should not contain ""([^""]*)""")]
+    public void ThenTheListShouldNotContain(string abbreviation)
+    {
+        Assert.That(_activeUnitsResult?.IsSuccess, Is.True);
+        var dto = _activeUnitsResult!.Value!;
+        var exists = dto.MassUnits.Any(u => u.Abbreviation == abbreviation) ||
+                     dto.VolumeUnits.Any(u => u.Abbreviation == abbreviation) ||
+                     dto.DiscreteUnits.Any(u => u.Abbreviation == abbreviation);
+        Assert.That(exists, Is.False);
     }
 
     [Then(@"the factor should be (.*) relative to (.*)")]
     public void ThenTheFactorShouldBeRelativeTo(decimal expectedFactor, string baseUnit)
     {
-        Assert.That(_currentFactor, Is.EqualTo(expectedFactor));
+        Assert.That(_currentFactorResult?.IsSuccess, Is.True);
+        Assert.That(_currentFactorResult?.Value, Is.EqualTo(expectedFactor));
     }
 
     [Given(@"a quantity of (.*) ""([^""]*)""")]
@@ -72,11 +116,14 @@ public class UnitOfMeasureSteps
         _fromUnit = unit;
         
         // Add basic units if not already present for conversion tests
-        if (!_mockUnits.Any(u => u.Abbreviation == "g")) _mockUnits.Add(new UnitOfMeasure { Abbreviation = "g", Category = "masa", ConversionFactor = 1.0m });
-        if (!_mockUnits.Any(u => u.Abbreviation == "lb")) _mockUnits.Add(new UnitOfMeasure { Abbreviation = "lb", Category = "masa", ConversionFactor = 454.0m });
-        if (!_mockUnits.Any(u => u.Abbreviation == "qq")) _mockUnits.Add(new UnitOfMeasure { Abbreviation = "qq", Category = "masa", ConversionFactor = 45400.0m });
-        if (!_mockUnits.Any(u => u.Abbreviation == "kg")) _mockUnits.Add(new UnitOfMeasure { Abbreviation = "kg", Category = "masa", ConversionFactor = 1000.0m });
-        if (!_mockUnits.Any(u => u.Abbreviation == "ml")) _mockUnits.Add(new UnitOfMeasure { Abbreviation = "ml", Category = "volumen", ConversionFactor = 1.0m });
+        bool added = false;
+        if (!_mockUnits.Any(u => u.Abbreviation == "g")) { _mockUnits.Add(new UnitOfMeasureInfo("Gramos", "g", "masa", 1.0m, true)); added = true; }
+        if (!_mockUnits.Any(u => u.Abbreviation == "lb")) { _mockUnits.Add(new UnitOfMeasureInfo("Libra", "lb", "masa", 454.0m, true)); added = true; }
+        if (!_mockUnits.Any(u => u.Abbreviation == "qq")) { _mockUnits.Add(new UnitOfMeasureInfo("Quintal", "qq", "masa", 45400.0m, true)); added = true; }
+        if (!_mockUnits.Any(u => u.Abbreviation == "kg")) { _mockUnits.Add(new UnitOfMeasureInfo("Kilo", "kg", "masa", 1000.0m, true)); added = true; }
+        if (!_mockUnits.Any(u => u.Abbreviation == "ml")) { _mockUnits.Add(new UnitOfMeasureInfo("Mililitro", "ml", "volumen", 1.0m, true)); added = true; }
+        
+        if (added) _unitService.ClearCache();
     }
 
     [When(@"I convert the quantity to ""([^""]*)""")]
@@ -88,29 +135,31 @@ public class UnitOfMeasureSteps
     [When(@"I try to convert the quantity to ""([^""]*)""")]
     public async Task WhenITryToConvertTheQuantityTo(string toUnit)
     {
-        try 
-        {
-            _conversionResult = await _unitService.Convert(_quantity, _fromUnit, toUnit);
-            _conversionFailed = false;
-        }
-        catch (Exception ex)
+        _conversionResult = await _unitService.Convert(_quantity, _fromUnit, toUnit);
+        if (!_conversionResult.IsSuccess)
         {
             _conversionFailed = true;
-            _scenarioContext["ErrorMessage"] = ex.Message;
+            _scenarioContext["ErrorMessage"] = _conversionResult.Error;
+        }
+        else 
+        {
+            _conversionFailed = false;
         }
     }
 
     [Then(@"the result should be (.*)")]
     public void ThenTheResultShouldBe(decimal expectedResult)
     {
-        Assert.That(_conversionResult, Is.EqualTo(expectedResult));
+        Assert.That(_conversionResult?.IsSuccess, Is.True);
+        Assert.That(_conversionResult?.Value, Is.EqualTo(expectedResult));
     }
 
     [Then(@"the result should be (.*) with a precision of (.*) decimal places")]
     public void ThenTheResultShouldBeWithAPrecisionOfDecimalPlaces(decimal expectedResult, int precision)
     {
+        Assert.That(_conversionResult?.IsSuccess, Is.True);
         var multiplier = (decimal)Math.Pow(10, precision);
-        var actualRounded = Math.Round(_conversionResult * multiplier) / multiplier;
+        var actualRounded = Math.Round(_conversionResult!.Value * multiplier) / multiplier;
         var expectedRounded = Math.Round(expectedResult * multiplier) / multiplier;
         
         Assert.That(actualRounded, Is.EqualTo(expectedRounded));
