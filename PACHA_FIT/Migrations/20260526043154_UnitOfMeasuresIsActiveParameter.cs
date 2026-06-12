@@ -1,0 +1,29 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace PACHA_FIT.Migrations
+{
+    /// <inheritdoc />
+    public partial class UnitOfMeasuresIsActiveParameter : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AddColumn<bool>(
+                name: "IsActive",
+                table: "UnitOfMeasuresFunc",
+                type: "bit",
+                nullable: false,
+                defaultValue: true);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "IsActive",
+                table: "UnitOfMeasuresFunc");
+        }
+    }
+}

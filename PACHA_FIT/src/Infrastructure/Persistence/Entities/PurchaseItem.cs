@@ -1,0 +1,28 @@
+﻿using PACHA_FIT.src.Core.Domain.Entities;
+
+namespace PACHA_FIT.Infrastructure.Persistence.Entities;
+
+public partial class PurchaseItem
+{
+    public int PurchaseItemId { get; set; }
+
+    public int? PurchaseId { get; set; }
+
+    public int? ProductId { get; set; }
+
+    public decimal Quantity { get; set; }
+
+    public decimal UnitCostSnapshot { get; set; }
+
+    public decimal TaxRateSnapshot { get; set; }
+
+    public decimal Subtotal { get; set; }
+
+    public decimal TaxAmount { get; set; }
+
+    public decimal LineTotal { get; set; }
+
+    public virtual Product? Product { get; set; }
+
+    public virtual PurchaseOrder? Purchase { get; set; }
+}

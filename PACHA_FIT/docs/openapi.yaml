@@ -141,7 +141,6 @@ components:
       required:
         - email
         - password
-        - fullName
       properties:
         email:
           type: string
@@ -227,7 +226,7 @@ components:
           type: string
           nullable: true
         statusCode:
-          type: integer
+          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfLoginResponse:
       type: object
       properties:
@@ -239,7 +238,7 @@ components:
           type: string
           nullable: true
         statusCode:
-          type: integer
+          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfUserResponseDto:
       type: object
       properties:
@@ -251,4 +250,14 @@ components:
           type: string
           nullable: true
         statusCode:
-          type: integer
+          $ref: '#/components/schemas/ErrorType'
+    ErrorType:
+      type: string
+      enum:
+        - Success
+        - NotFound
+        - Unauthorized
+        - Validation
+        - Conflict
+        - Unexpected
+        - BadRequest

@@ -1,5 +1,5 @@
-﻿
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using PACHA_FIT.Core.Domain.User.Dtos;
 
 namespace PACHA_FIT.Core.Domain.User.Ports;
 
@@ -7,5 +7,5 @@ public interface ICredentialService
 {
     public ClaimsPrincipal? ValidateToken(string token);
 
-    public string GenerateToken(Entities.User user);
+    public string GenerateToken(InternalUserResponse user);
 }

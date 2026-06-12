@@ -22,101 +22,7 @@ namespace PACHA_FIT.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PACHA_FIT.Core.Domain.Entities.PurchaseExpense", b =>
-                {
-                    b.Property<int>("PurchaseExpenseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseExpenseId"));
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 4)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("PurchaseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PurchaseExpenseId")
-                        .HasName("PK__Purchase__D5E71DC0FA258615");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("PurchaseId");
-
-                    b.ToTable("PurchaseExpenses");
-                });
-
-            modelBuilder.Entity("PACHA_FIT.Core.Domain.Entities.User", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTimeOffset?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetimeoffset")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("FullName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("IdentificationNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("IdentificationType")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)")
-                        .HasDefaultValue("05");
-
-                    b.Property<bool?>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId")
-                        .HasName("PK__Users__1788CC4C54F69319");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex(new[] { "Email" }, "UQ__Users__A9D105345028B452")
-                        .IsUnique();
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Account", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Account", b =>
                 {
                     b.Property<int>("AccountId")
                         .ValueGeneratedOnAdd()
@@ -157,7 +63,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AccountingEntry", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AccountingEntry", b =>
                 {
                     b.Property<long>("EntryId")
                         .ValueGeneratedOnAdd()
@@ -210,7 +116,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("AccountingEntries");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AccountingPeriod", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AccountingPeriod", b =>
                 {
                     b.Property<int>("PeriodId")
                         .ValueGeneratedOnAdd()
@@ -258,7 +164,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("AccountingPeriods");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AdjustmentReason", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AdjustmentReason", b =>
                 {
                     b.Property<int>("ReasonId")
                         .ValueGeneratedOnAdd()
@@ -286,7 +192,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("AdjustmentReasons");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AuditLog", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AuditLog", b =>
                 {
                     b.Property<long>("AuditId")
                         .ValueGeneratedOnAdd()
@@ -335,7 +241,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("AuditLogs");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Category", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Category", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
@@ -367,7 +273,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CreditNote", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNote", b =>
                 {
                     b.Property<int>("CreditNoteId")
                         .ValueGeneratedOnAdd()
@@ -431,7 +337,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("CreditNotes");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CreditNoteItem", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNoteItem", b =>
                 {
                     b.Property<int>("CreditNoteItemId")
                         .ValueGeneratedOnAdd()
@@ -464,7 +370,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("CreditNoteItems");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CustomerPayment", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CustomerPayment", b =>
                 {
                     b.Property<int>("PaymentId")
                         .ValueGeneratedOnAdd()
@@ -504,7 +410,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("CustomerPayments");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PaymentMethod", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PaymentMethod", b =>
                 {
                     b.Property<int>("PaymentMethodId")
                         .ValueGeneratedOnAdd()
@@ -523,7 +429,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("PaymentMethods");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Product", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Product", b =>
                 {
                     b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -546,6 +452,12 @@ namespace PACHA_FIT.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<bool>("IsWeightBased")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IvaPercentage")
+                        .HasColumnType("int");
 
                     b.Property<string>("MainImageUrl")
                         .HasColumnType("nvarchar(max)")
@@ -622,7 +534,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.ProductComposition", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.ProductComposition", b =>
                 {
                     b.Property<int>("CompositionId")
                         .ValueGeneratedOnAdd()
@@ -654,7 +566,38 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("ProductCompositions");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PurchaseItem", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseExpense", b =>
+                {
+                    b.Property<int>("PurchaseExpenseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseExpenseId"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PurchaseExpenseId")
+                        .HasName("PK__Purchase__D5E71DC0FA258615");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("PurchaseExpenses");
+                });
+
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseItem", b =>
                 {
                     b.Property<int>("PurchaseItemId")
                         .ValueGeneratedOnAdd()
@@ -696,7 +639,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("PurchaseItems");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", b =>
                 {
                     b.Property<int>("PurchaseId")
                         .ValueGeneratedOnAdd()
@@ -737,7 +680,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("PurchaseOrders");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Role", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Role", b =>
                 {
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
@@ -759,7 +702,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Sale", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", b =>
                 {
                     b.Property<int>("SaleId")
                         .ValueGeneratedOnAdd()
@@ -835,7 +778,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("Sales");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.SaleItem", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.SaleItem", b =>
                 {
                     b.Property<int>("SaleItemId")
                         .ValueGeneratedOnAdd()
@@ -861,6 +804,9 @@ namespace PACHA_FIT.Migrations
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18, 4)");
 
+                    b.Property<int>("TaxRateId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TaxRateSnapshot")
                         .HasColumnType("decimal(5, 2)");
 
@@ -874,10 +820,12 @@ namespace PACHA_FIT.Migrations
 
                     b.HasIndex("SaleId");
 
+                    b.HasIndex("TaxRateId");
+
                     b.ToTable("SaleItems");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.StockMovement", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.StockMovement", b =>
                 {
                     b.Property<long>("MovementId")
                         .ValueGeneratedOnAdd()
@@ -898,6 +846,9 @@ namespace PACHA_FIT.Migrations
 
                     b.Property<int?>("CreditNoteId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("InputQuantity")
                         .HasColumnType("decimal(18, 4)");
@@ -936,7 +887,7 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("StockMovements");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Supplier", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Supplier", b =>
                 {
                     b.Property<int>("SupplierId")
                         .ValueGeneratedOnAdd()
@@ -968,6 +919,108 @@ namespace PACHA_FIT.Migrations
                         .HasFilter("[TaxId] IS NOT NULL");
 
                     b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", b =>
+                {
+                    b.Property<int>("UnitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnitId"));
+
+                    b.Property<string>("Abbreviation")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("ConversionFactor")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18, 8)")
+                        .HasDefaultValue(1m);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("UnitId")
+                        .HasName("PK__UnitOfMe__44F5ECB5BFBA4837");
+
+                    b.ToTable("UnitOfMeasuresFunc");
+                });
+
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("IdentificationNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("IdentificationType")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)")
+                        .HasDefaultValue("05");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId")
+                        .HasName("PK__Users__1788CC4C54F69319");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex(new[] { "Email" }, "UQ__Users__A9D105345028B452")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.TaxRate", b =>
@@ -1002,67 +1055,9 @@ namespace PACHA_FIT.Migrations
                     b.ToTable("TaxRates");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Account", b =>
                 {
-                    b.Property<int>("UnitId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnitId"));
-
-                    b.Property<string>("Abbreviation")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<decimal>("ConversionFactor")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18, 8)")
-                        .HasDefaultValue(1m);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("UnitId")
-                        .HasName("PK__UnitOfMe__44F5ECB5BFBA4837");
-
-                    b.ToTable("UnitOfMeasures");
-                });
-
-            modelBuilder.Entity("PACHA_FIT.Core.Domain.Entities.PurchaseExpense", b =>
-                {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Account", "Account")
-                        .WithMany("PurchaseExpenses")
-                        .HasForeignKey("AccountId")
-                        .IsRequired()
-                        .HasConstraintName("FK__PurchaseE__Accou__65370702");
-
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", "Purchase")
-                        .WithMany("PurchaseExpenses")
-                        .HasForeignKey("PurchaseId")
-                        .IsRequired()
-                        .HasConstraintName("FK__PurchaseE__Purch__6442E2C9");
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Purchase");
-                });
-
-            modelBuilder.Entity("PACHA_FIT.Core.Domain.Entities.User", b =>
-                {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .HasConstraintName("FK__Users__RoleId__4AB81AF0");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Account", b =>
-                {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Account", "ParentAccount")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Account", "ParentAccount")
                         .WithMany("InverseParentAccount")
                         .HasForeignKey("ParentAccountId")
                         .HasConstraintName("FK__Accounts__Parent__756D6ECB");
@@ -1070,24 +1065,24 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("ParentAccount");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AccountingEntry", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AccountingEntry", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Account", "Account")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Account", "Account")
                         .WithMany("AccountingEntries")
                         .HasForeignKey("AccountId")
                         .HasConstraintName("FK__Accountin__Accou__07C12930");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.CreditNote", "CreditNote")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNote", "CreditNote")
                         .WithMany("AccountingEntries")
                         .HasForeignKey("CreditNoteId")
                         .HasConstraintName("FK__Accountin__Credi__078C1F06");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", "Purchase")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", "Purchase")
                         .WithMany("AccountingEntries")
                         .HasForeignKey("PurchaseId")
                         .HasConstraintName("FK__Accountin__Purch__09A971A2");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Sale", "Sale")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", "Sale")
                         .WithMany("AccountingEntries")
                         .HasForeignKey("SaleId")
                         .HasConstraintName("FK__Accountin__SaleI__08B54D69");
@@ -1101,14 +1096,14 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AccountingPeriod", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AccountingPeriod", b =>
                 {
-                    b.HasOne("PACHA_FIT.Core.Domain.Entities.User", "ClosedByNavigation")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.User", "ClosedByNavigation")
                         .WithMany("AccountingPeriodClosedByNavigations")
                         .HasForeignKey("ClosedBy")
                         .HasConstraintName("FK__Accountin__Close__0E391C95");
 
-                    b.HasOne("PACHA_FIT.Core.Domain.Entities.User", "LastReopenedByNavigation")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.User", "LastReopenedByNavigation")
                         .WithMany("AccountingPeriodLastReopenedByNavigations")
                         .HasForeignKey("LastReopenedBy")
                         .HasConstraintName("FK__Accountin__LastR__0F2D40CE");
@@ -1118,9 +1113,9 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("LastReopenedByNavigation");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AuditLog", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AuditLog", b =>
                 {
-                    b.HasOne("PACHA_FIT.Core.Domain.Entities.User", "User")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.User", "User")
                         .WithMany("AuditLogs")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__AuditLogs__UserI__72910220");
@@ -1128,9 +1123,9 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Category", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Category", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Category", "ParentCategory")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Category", "ParentCategory")
                         .WithMany("InverseParentCategory")
                         .HasForeignKey("ParentCategoryId")
                         .HasConstraintName("FK__Categorie__Paren__5070F446");
@@ -1138,15 +1133,15 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CreditNote", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNote", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Sale", "Sale")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", "Sale")
                         .WithMany("CreditNotes")
                         .HasForeignKey("SaleId")
                         .IsRequired()
                         .HasConstraintName("FK__CreditNot__SaleI__69FBBC1F");
 
-                    b.HasOne("PACHA_FIT.Core.Domain.Entities.User", "User")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.User", "User")
                         .WithMany("CreditNotes")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__CreditNot__UserI__6AEFE058");
@@ -1156,15 +1151,15 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CreditNoteItem", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNoteItem", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.CreditNote", "CreditNote")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNote", "CreditNote")
                         .WithMany("CreditNoteItems")
                         .HasForeignKey("CreditNoteId")
                         .IsRequired()
                         .HasConstraintName("FK__CreditNot__Credi__6EC0713C");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Product", "Product")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Product", "Product")
                         .WithMany("CreditNoteItems")
                         .HasForeignKey("ProductId")
                         .IsRequired()
@@ -1175,15 +1170,15 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CustomerPayment", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CustomerPayment", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.PaymentMethod", "PaymentMethod")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.PaymentMethod", "PaymentMethod")
                         .WithMany("CustomerPayments")
                         .HasForeignKey("PaymentMethodId")
                         .IsRequired()
                         .HasConstraintName("FK__CustomerP__Payme__7D0E9093");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Sale", "Sale")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", "Sale")
                         .WithMany("CustomerPayments")
                         .HasForeignKey("SaleId")
                         .IsRequired()
@@ -1194,24 +1189,24 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Product", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Product", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Category", "Category")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .HasConstraintName("FK__Products__Catego__5629CD9C");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", "PurchaseUnit")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", "PurchaseUnit")
                         .WithMany("ProductPurchaseUnits")
                         .HasForeignKey("PurchaseUnitId")
                         .HasConstraintName("FK__Products__Purcha__5812160E");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", "SaleUnit")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", "SaleUnit")
                         .WithMany("ProductSaleUnits")
                         .HasForeignKey("SaleUnitId")
                         .HasConstraintName("FK__Products__SaleUn__59063A47");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", "StockUnit")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", "StockUnit")
                         .WithMany("ProductStockUnits")
                         .HasForeignKey("StockUnitId")
                         .HasConstraintName("FK__Products__StockU__59FA5E80");
@@ -1225,19 +1220,19 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("StockUnit");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.ProductComposition", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.ProductComposition", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Product", "BaseProduct")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Product", "BaseProduct")
                         .WithMany("ProductCompositionBaseProducts")
                         .HasForeignKey("BaseProductId")
                         .HasConstraintName("FK__ProductCo__BaseP__03F0984C");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Product", "ParentProduct")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Product", "ParentProduct")
                         .WithMany("ProductCompositionParentProducts")
                         .HasForeignKey("ParentProductId")
                         .HasConstraintName("FK__ProductCo__Paren__02FC7413");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", "Unit")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", "Unit")
                         .WithMany("ProductCompositions")
                         .HasForeignKey("UnitId")
                         .HasConstraintName("FK__ProductCo__UnitI__04E4BC85");
@@ -1249,14 +1244,33 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("Unit");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PurchaseItem", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseExpense", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Product", "Product")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Account", "Account")
+                        .WithMany("PurchaseExpenses")
+                        .HasForeignKey("AccountId")
+                        .IsRequired()
+                        .HasConstraintName("FK__PurchaseE__Accou__65370702");
+
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", "Purchase")
+                        .WithMany("PurchaseExpenses")
+                        .HasForeignKey("PurchaseId")
+                        .IsRequired()
+                        .HasConstraintName("FK__PurchaseE__Purch__6442E2C9");
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Purchase");
+                });
+
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseItem", b =>
+                {
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Product", "Product")
                         .WithMany("PurchaseItems")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK__PurchaseI__Produ__68487DD7");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", "Purchase")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", "Purchase")
                         .WithMany("PurchaseItems")
                         .HasForeignKey("PurchaseId")
                         .HasConstraintName("FK__PurchaseI__Purch__6754599E");
@@ -1266,9 +1280,9 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("Purchase");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Supplier", "Supplier")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Supplier", "Supplier")
                         .WithMany("PurchaseOrders")
                         .HasForeignKey("SupplierId")
                         .HasConstraintName("FK__PurchaseO__Suppl__619B8048");
@@ -1283,14 +1297,14 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("TaxRate");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Sale", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.PaymentMethod", "PaymentMethod")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.PaymentMethod", "PaymentMethod")
                         .WithMany("Sales")
                         .HasForeignKey("PaymentMethodId")
                         .HasConstraintName("FK__Sales__PaymentMe__71D1E811");
 
-                    b.HasOne("PACHA_FIT.Core.Domain.Entities.User", "User")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.User", "User")
                         .WithMany("Sales")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__Sales__UserId__70DDC3D8");
@@ -1300,51 +1314,59 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.SaleItem", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.SaleItem", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Product", "Product")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Product", "Product")
                         .WithMany("SaleItems")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK__SaleItems__Produ__797309D9");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Sale", "Sale")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", "Sale")
                         .WithMany("SaleItems")
                         .HasForeignKey("SaleId")
                         .HasConstraintName("FK__SaleItems__SaleI__787EE5A0");
 
+                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.TaxRate", "TaxRate")
+                        .WithMany()
+                        .HasForeignKey("TaxRateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Product");
 
                     b.Navigation("Sale");
+
+                    b.Navigation("TaxRate");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.StockMovement", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.StockMovement", b =>
                 {
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.AdjustmentReason", "AdjustmentReason")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.AdjustmentReason", "AdjustmentReason")
                         .WithMany("StockMovements")
                         .HasForeignKey("AdjustmentReasonId")
                         .HasConstraintName("FK__StockMove__Adjus__7755B73D");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.CreditNote", "CreditNote")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNote", "CreditNote")
                         .WithMany("StockMovements")
                         .HasForeignKey("CreditNoteId")
                         .HasConstraintName("FK__StockMove__Credi__7849DB76");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", "InputUnit")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", "InputUnit")
                         .WithMany("StockMovements")
                         .HasForeignKey("InputUnitId")
                         .HasConstraintName("FK__StockMove__Input__7D439ABD");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Product", "Product")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Product", "Product")
                         .WithMany("StockMovements")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK__StockMove__Produ__7C4F7684");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", "Purchase")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", "Purchase")
                         .WithMany("StockMovements")
                         .HasForeignKey("PurchaseId")
                         .HasConstraintName("FK__StockMove__Purch__7F2BE32F");
 
-                    b.HasOne("PACHA_FIT.src.Core.Domain.Entities.Sale", "Sale")
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", "Sale")
                         .WithMany("StockMovements")
                         .HasForeignKey("SaleId")
                         .HasConstraintName("FK__StockMove__SaleI__7E37BEF6");
@@ -1362,20 +1384,17 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("Sale");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.Core.Domain.Entities.User", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.User", b =>
                 {
-                    b.Navigation("AccountingPeriodClosedByNavigations");
+                    b.HasOne("PACHA_FIT.Infrastructure.Persistence.Entities.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("FK__Users__RoleId__4AB81AF0");
 
-                    b.Navigation("AccountingPeriodLastReopenedByNavigations");
-
-                    b.Navigation("AuditLogs");
-
-                    b.Navigation("CreditNotes");
-
-                    b.Navigation("Sales");
+                    b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Account", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Account", b =>
                 {
                     b.Navigation("AccountingEntries");
 
@@ -1384,19 +1403,19 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("PurchaseExpenses");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.AdjustmentReason", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.AdjustmentReason", b =>
                 {
                     b.Navigation("StockMovements");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Category", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Category", b =>
                 {
                     b.Navigation("InverseParentCategory");
 
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.CreditNote", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.CreditNote", b =>
                 {
                     b.Navigation("AccountingEntries");
 
@@ -1405,14 +1424,14 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("StockMovements");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PaymentMethod", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PaymentMethod", b =>
                 {
                     b.Navigation("CustomerPayments");
 
                     b.Navigation("Sales");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Product", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Product", b =>
                 {
                     b.Navigation("CreditNoteItems");
 
@@ -1427,7 +1446,7 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("StockMovements");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.PurchaseOrder", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.PurchaseOrder", b =>
                 {
                     b.Navigation("AccountingEntries");
 
@@ -1438,12 +1457,12 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("StockMovements");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Role", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Role", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Sale", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Sale", b =>
                 {
                     b.Navigation("AccountingEntries");
 
@@ -1456,17 +1475,12 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("StockMovements");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.Supplier", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.Supplier", b =>
                 {
                     b.Navigation("PurchaseOrders");
                 });
 
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.TaxRate", b =>
-                {
-                    b.Navigation("PurchaseOrders");
-                });
-
-            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.UnitOfMeasure", b =>
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.UnitOfMeasure", b =>
                 {
                     b.Navigation("ProductCompositions");
 
@@ -1477,6 +1491,24 @@ namespace PACHA_FIT.Migrations
                     b.Navigation("ProductStockUnits");
 
                     b.Navigation("StockMovements");
+                });
+
+            modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.User", b =>
+                {
+                    b.Navigation("AccountingPeriodClosedByNavigations");
+
+                    b.Navigation("AccountingPeriodLastReopenedByNavigations");
+
+                    b.Navigation("AuditLogs");
+
+                    b.Navigation("CreditNotes");
+
+                    b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("PACHA_FIT.src.Core.Domain.Entities.TaxRate", b =>
+                {
+                    b.Navigation("PurchaseOrders");
                 });
 #pragma warning restore 612, 618
         }

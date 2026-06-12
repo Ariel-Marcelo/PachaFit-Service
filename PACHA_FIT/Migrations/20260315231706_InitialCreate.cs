@@ -127,7 +127,7 @@ namespace PACHA_FIT.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UnitOfMeasures",
+                name: "UnitOfMeasuresFunc",
                 columns: table => new
                 {
                     UnitId = table.Column<int>(type: "int", nullable: false)
@@ -142,7 +142,7 @@ namespace PACHA_FIT.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "User",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
@@ -231,17 +231,17 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__Products__Purcha__5812160E",
                         column: x => x.PurchaseUnitId,
-                        principalTable: "UnitOfMeasures",
+                        principalTable: "UnitOfMeasuresFunc",
                         principalColumn: "UnitId");
                     table.ForeignKey(
                         name: "FK__Products__SaleUn__59063A47",
                         column: x => x.SaleUnitId,
-                        principalTable: "UnitOfMeasures",
+                        principalTable: "UnitOfMeasuresFunc",
                         principalColumn: "UnitId");
                     table.ForeignKey(
                         name: "FK__Products__StockU__59FA5E80",
                         column: x => x.StockUnitId,
-                        principalTable: "UnitOfMeasures",
+                        principalTable: "UnitOfMeasuresFunc",
                         principalColumn: "UnitId");
                 });
 
@@ -266,12 +266,12 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__Accountin__Close__0E391C95",
                         column: x => x.ClosedBy,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                     table.ForeignKey(
                         name: "FK__Accountin__LastR__0F2D40CE",
                         column: x => x.LastReopenedBy,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -296,7 +296,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__AuditLogs__UserI__72910220",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -331,7 +331,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__Sales__UserId__70DDC3D8",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -388,7 +388,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__ProductCo__UnitI__04E4BC85",
                         column: x => x.UnitId,
-                        principalTable: "UnitOfMeasures",
+                        principalTable: "UnitOfMeasuresFunc",
                         principalColumn: "UnitId");
                 });
 
@@ -450,7 +450,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__CreditNot__UserI__6AEFE058",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "UserId");
                 });
 
@@ -612,7 +612,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__StockMove__Input__7D439ABD",
                         column: x => x.InputUnitId,
-                        principalTable: "UnitOfMeasures",
+                        principalTable: "UnitOfMeasuresFunc",
                         principalColumn: "UnitId");
                     table.ForeignKey(
                         name: "FK__StockMove__Produ__7C4F7684",
@@ -880,12 +880,12 @@ namespace PACHA_FIT.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
-                table: "Users",
+                table: "User",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "UQ__Users__A9D105345028B452",
-                table: "Users",
+                table: "User",
                 column: "Email",
                 unique: true);
         }
@@ -945,7 +945,7 @@ namespace PACHA_FIT.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "UnitOfMeasures");
+                name: "UnitOfMeasuresFunc");
 
             migrationBuilder.DropTable(
                 name: "Suppliers");
@@ -957,7 +957,7 @@ namespace PACHA_FIT.Migrations
                 name: "PaymentMethods");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Roles");

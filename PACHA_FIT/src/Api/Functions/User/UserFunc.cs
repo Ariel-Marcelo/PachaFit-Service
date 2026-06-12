@@ -2,11 +2,11 @@ using System.Security.Claims;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using PACHA_FIT.Api.Shared;
-using PACHA_FIT.Core.Application.User;
-using PACHA_FIT.Core.Domain.Generated;
-using PACHA_FIT.Core.Domain.User;
+using PACHA_FIT.Api.Mappers;
+using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
+using PACHA_FIT.Infrastructure.Nswag;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -41,10 +41,14 @@ public class UserFunc : UserControllerBase
 
         if (currentUserId != userId)
         {
-             return new ResultDtoOfString { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = 403 };
+             return new ResultDtoOfString { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = ErrorType.Unauthorized };
         }
 
         var request = await req.ReadFromJsonAsync<UpdateProfileRequest>();
+        if (request == null)
+        {
+            return new ResultDtoOfString { IsSuccess = false, Error = "Invalid request body", StatusCode = ErrorType.BadRequest };
+        }
         return await this.UpdateProfile(userId, request);
     }
     
@@ -60,10 +64,14 @@ public class UserFunc : UserControllerBase
 
         if (!isAdmin)
         {
-            return new ResultDtoOfString { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = 403 };
+            return new ResultDtoOfString { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = ErrorType.Unauthorized };
         }
 
         var request = await req.ReadFromJsonAsync<UpdateUserRequest>();
+        if (request == null)
+        {
+            return new ResultDtoOfString { IsSuccess = false, Error = "Invalid request body", StatusCode = ErrorType.BadRequest };
+        }
         return await this.UpdateUser(userId, request);
     }
 
@@ -75,7 +83,7 @@ public class UserFunc : UserControllerBase
         return new ResultDtoOfUserResponseDto
         {
             IsSuccess = result.IsSuccess,
-            Value = result.Value != null ? MapToResponse(result.Value) : null,
+            Value = result.Value != null ? UserApiMapper.ToUserResponseDto(result.Value) : null,
             Error = result.Error,
             StatusCode = result.StatusCode
         };
@@ -83,7 +91,7 @@ public class UserFunc : UserControllerBase
 
     public override async Task<ResultDtoOfString> UpdateProfile(string userId, UpdateProfileRequest body, CancellationToken cancellationToken = default)
     {
-        if (!int.TryParse(userId, out int id)) return new ResultDtoOfString { IsSuccess = false, Error = "Id inválido", StatusCode = 400 };
+        if (!int.TryParse(userId, out int id)) return new ResultDtoOfString { IsSuccess = false, Error = "Id inválido", StatusCode = ErrorType.BadRequest };
 
         var updateInfo = new UserUpdateInfo(
             Email: body.Email,
@@ -107,7 +115,7 @@ public class UserFunc : UserControllerBase
 
     public override async Task<ResultDtoOfString> UpdateUser(string userId, UpdateUserRequest body, CancellationToken cancellationToken = default)
     {
-        if (!int.TryParse(userId, out int id)) return new ResultDtoOfString { IsSuccess = false, Error = "Id inválido", StatusCode = 400 };
+        if (!int.TryParse(userId, out int id)) return new ResultDtoOfString { IsSuccess = false, Error = "Id inválido", StatusCode = ErrorType.BadRequest };
 
         var updateInfo = new UserUpdateInfo(
             RoleId: body.RoleId,
@@ -122,23 +130,6 @@ public class UserFunc : UserControllerBase
             Value = result.Value,
             Error = result.Error,
             StatusCode = result.StatusCode
-        };
-    }
-
-    private PACHA_FIT.Core.Domain.Generated.UserResponseDto MapToResponse(UserRequests userRequests)
-    {
-        return new PACHA_FIT.Core.Domain.Generated.UserResponseDto
-        {
-            UserId = userRequests.UserId,
-            Email = userRequests.Email,
-            FullName = userRequests.FullName,
-            RoleId = userRequests.RoleId,
-            IsActive = userRequests.IsActive,
-            CreatedAt = userRequests.CreatedAt,
-            IdentificationType = userRequests.IdentificationType,
-            IdentificationNumber = userRequests.IdentificationNumber,
-            Address = userRequests.Address,
-            PhoneNumber = userRequests.PhoneNumber
         };
     }
 }

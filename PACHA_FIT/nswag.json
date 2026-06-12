@@ -19,7 +19,8 @@
       "operationGenerationMode": "MultipleClientsFromOperationId",
       "additionalNamespaceUsages": [
         "Microsoft.AspNetCore.Http",
-        "Microsoft.AspNetCore.Mvc"
+        "Microsoft.AspNetCore.Mvc",
+        "PACHA_FIT.Core.Domain.Shared"
       ],
       "generateOptionalParameters": false,
       "generateJsonSerializerSettings": false,
@@ -32,7 +33,7 @@
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
-      "namespace": "PACHA_FIT.Core.Domain.Generated",
+      "namespace": "PACHA_FIT.Infrastructure.Nswag",
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTimeOffset",
       "jsonConverters": null,
@@ -50,7 +51,7 @@
       "jsonLibrary": "SystemTextJson",
       "generateDefaultValues": true,
       "generateDataAnnotations": true,
-      "excludedTypeNames": [],
+      "excludedTypeNames": ["ErrorType"],
       "excludedParameterNames": [],
       "handleReferences": false,
       "generateImmutableArrayProperties": false,
@@ -68,7 +69,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "src/Core/Domain/Generated/PachaFitApi.cs",
+      "output": "src/Infrastructure/Nswag/PachaFitApi.cs",
       "newLineBehavior": "Auto"
     }
   }

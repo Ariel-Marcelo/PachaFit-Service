@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PACHA_FIT.Core.Domain.Entities;
+using PACHA_FIT.Infrastructure.Persistence.Entities;
 using PACHA_FIT.src.Core.Domain.Entities;
 
 namespace PACHA_FIT.Infrastructure.Persistence;
@@ -476,6 +476,8 @@ public partial class PachaFitContext : DbContext
             entity.HasKey(e => e.UnitId).HasName("PK__UnitOfMe__44F5ECB5BFBA4837");
 
             entity.Property(e => e.Abbreviation).HasMaxLength(10);
+            entity.Property(e => e.Category).HasMaxLength(50);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.ConversionFactor)
                 .HasDefaultValue(1m)
                 .HasColumnType("decimal(18, 8)");

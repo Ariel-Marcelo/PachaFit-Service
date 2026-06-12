@@ -2,10 +2,11 @@ using PACHA_FIT.Core.Domain.Shared;
 
 namespace PACHA_FIT.Core.Domain.User.Specifications;
 
-public class UserByEmailSpecification : BaseSpecification<Entities.User>
+// TODO: Dont use Entities at Domain Layer
+public class UserByEmailSpecification : BaseSpecification<Infrastructure.Persistence.Entities.User>
 {
     public UserByEmailSpecification(string email) : base(u => u.Email == email)
     {
-        AddInclude(u => u.Role);
+        AddInclude(u => u.Role!);
     }
 }
