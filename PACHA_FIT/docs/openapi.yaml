@@ -112,6 +112,120 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResultDtoOfString'
+  /inventory/adjustment-reasons:
+    get:
+      tags:
+        - Inventory
+      summary: List all predefined adjustment reasons
+      operationId: Inventory_GetAdjustmentReasons
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /inventory/units:
+    get:
+      tags:
+        - Inventory
+      summary: Get all active units of measure
+      operationId: Inventory_GetUnits
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfUnitOfMeasureGroupedDto'
+  /inventory/units/convert:
+    get:
+      tags:
+        - Inventory
+      summary: Convert quantity between units
+      operationId: Inventory_ConvertUnit
+      parameters:
+        - name: quantity
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: fromUnit
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: toUnit
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfDecimal'
+  /inventory/products:
+    post:
+      tags:
+        - Inventory
+      summary: Create a new product
+      operationId: Inventory_CreateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfProductResponse'
+  /inventory/products/{sku}/deactivate:
+    post:
+      tags:
+        - Inventory
+      summary: Deactivate a product
+      operationId: Inventory_DeactivateProduct
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfBoolean'
+  /inventory/dispatch:
+    post:
+      tags:
+        - Inventory
+      summary: Dispatch stock
+      operationId: Inventory_DispatchStock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispatchStockRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfString'
 components:
   schemas:
     LoginRequest:
@@ -214,6 +328,124 @@ components:
         phoneNumber:
           type: string
           nullable: true
+    ProductCreateRequest:
+      type: object
+      required:
+        - name
+        - sku
+      properties:
+        name:
+          type: string
+        sku:
+          type: string
+        categoryId:
+          type: integer
+          nullable: true
+        costPrice:
+          type: number
+        salePrice:
+          type: number
+        ivaPercentage:
+          type: integer
+        isWeightBased:
+          type: boolean
+        initialStock:
+          type: number
+        initialUnitAbbreviation:
+          type: string
+        specs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSpec'
+          nullable: true
+        composition:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCompositionRequest'
+          nullable: true
+    ProductResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+        name:
+          type: string
+        sku:
+          type: string
+        stockQty:
+          type: number
+        ivaPercentage:
+          type: integer
+        isWeightBased:
+          type: boolean
+        specsJson:
+          type: string
+          nullable: true
+        composition:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCompositionResponse'
+          nullable: true
+    ProductSpec:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+    ProductCompositionRequest:
+      type: object
+      properties:
+        baseProductSku:
+          type: string
+        quantity:
+          type: number
+        unitAbbreviation:
+          type: string
+    ProductCompositionResponse:
+      type: object
+      properties:
+        baseProductName:
+          type: string
+        quantity:
+          type: number
+        unitAbbreviation:
+          type: string
+    UnitOfMeasureGroupedDto:
+      type: object
+      properties:
+        massUnits:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitOfMeasureItemDto'
+        volumeUnits:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitOfMeasureItemDto'
+        discreteUnits:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitOfMeasureItemDto'
+    UnitOfMeasureItemDto:
+      type: object
+      properties:
+        abbreviation:
+          type: string
+        name:
+          type: string
+    DispatchStockRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+        - unitAbbreviation
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: number
+        unitAbbreviation:
+          type: string
     ResultDtoOfString:
       type: object
       properties:
@@ -246,6 +478,54 @@ components:
           type: boolean
         value:
           $ref: '#/components/schemas/UserResponseDto'
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          $ref: '#/components/schemas/ErrorType'
+    ResultDtoOfUnitOfMeasureGroupedDto:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/UnitOfMeasureGroupedDto'
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          $ref: '#/components/schemas/ErrorType'
+    ResultDtoOfDecimal:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          type: number
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          $ref: '#/components/schemas/ErrorType'
+    ResultDtoOfProductResponse:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          $ref: '#/components/schemas/ProductResponse'
+        error:
+          type: string
+          nullable: true
+        statusCode:
+          $ref: '#/components/schemas/ErrorType'
+    ResultDtoOfBoolean:
+      type: object
+      properties:
+        isSuccess:
+          type: boolean
+        value:
+          type: boolean
         error:
           type: string
           nullable: true

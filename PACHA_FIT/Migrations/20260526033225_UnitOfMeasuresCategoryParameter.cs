@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,7 +12,7 @@ namespace PACHA_FIT.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "Category",
-                table: "UnitOfMeasuresFunc",
+                table: "UnitOfMeasures",
                 type: "nvarchar(50)",
                 maxLength: 50,
                 nullable: false,
@@ -24,7 +24,7 @@ namespace PACHA_FIT.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Category",
-                table: "UnitOfMeasuresFunc");
+                table: "UnitOfMeasures");
         }
     }
 }

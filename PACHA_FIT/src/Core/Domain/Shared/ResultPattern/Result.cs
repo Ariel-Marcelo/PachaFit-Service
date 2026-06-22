@@ -20,6 +20,7 @@ public class Result<T> : IResult
         IsSuccess = true;
         Value = value;
         Error = null;
+        StatusCode = ErrorType.Success;
     }
 
     public object? GetValue() => Value;

@@ -1,0 +1,31 @@
+project: pachafit-service
+stack:
+  language: C#
+  framework: .NET 8.0 (Azure Functions v4 Isolated)
+  persistence: SQL Server (EF Core 9)
+  architecture: Hexagonal / Clean Architecture
+
+testing:
+  strict_tdd: true
+  test_runner: dotnet test
+  test_layers:
+    - BDD (Reqnroll)
+    - Unit (NUnit)
+  coverage:
+    tool: coverlet
+    command: ./run-tests.ps1
+  linter:
+    command: dotnet format
+  type_checker:
+    command: dotnet build
+
+persistence_mode: hybrid
+delivery_strategy: ask-on-risk
+chain_strategy: feature-branch-chain
+
+conventions:
+  - Repository Pattern
+  - Result Pattern
+  - Specification Pattern
+  - Mapperly for mapping
+  - Neutral/Professional English for artifacts

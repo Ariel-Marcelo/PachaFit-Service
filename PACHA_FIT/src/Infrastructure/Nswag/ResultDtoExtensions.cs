@@ -16,3 +16,22 @@ public partial class ResultDtoOfUserResponseDto : IResult
     public object? GetValue() => this.Value;
 }
 
+public partial class ResultDtoOfUnitOfMeasureGroupedDto : IResult
+{
+    public object? GetValue() => this.Value;
+}
+
+public partial class ResultDtoOfDecimal : IResult
+{
+    public object? GetValue() => this.Value;
+}
+
+public partial class ResultDtoOfProductResponse : IResult
+{
+    public object? GetValue() => this.Value;
+}
+
+public partial class ResultDtoOfBoolean : IResult
+{
+    public object? GetValue() => this.Value;
+}

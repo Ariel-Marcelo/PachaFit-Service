@@ -957,7 +957,7 @@ namespace PACHA_FIT.Migrations
                     b.HasKey("UnitId")
                         .HasName("PK__UnitOfMe__44F5ECB5BFBA4837");
 
-                    b.ToTable("UnitOfMeasuresFunc");
+                    b.ToTable("UnitOfMeasures");
                 });
 
             modelBuilder.Entity("PACHA_FIT.Infrastructure.Persistence.Entities.User", b =>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -127,7 +127,7 @@ namespace PACHA_FIT.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UnitOfMeasuresFunc",
+                name: "UnitOfMeasures",
                 columns: table => new
                 {
                     UnitId = table.Column<int>(type: "int", nullable: false)
@@ -231,17 +231,17 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__Products__Purcha__5812160E",
                         column: x => x.PurchaseUnitId,
-                        principalTable: "UnitOfMeasuresFunc",
+                        principalTable: "UnitOfMeasures",
                         principalColumn: "UnitId");
                     table.ForeignKey(
                         name: "FK__Products__SaleUn__59063A47",
                         column: x => x.SaleUnitId,
-                        principalTable: "UnitOfMeasuresFunc",
+                        principalTable: "UnitOfMeasures",
                         principalColumn: "UnitId");
                     table.ForeignKey(
                         name: "FK__Products__StockU__59FA5E80",
                         column: x => x.StockUnitId,
-                        principalTable: "UnitOfMeasuresFunc",
+                        principalTable: "UnitOfMeasures",
                         principalColumn: "UnitId");
                 });
 
@@ -388,7 +388,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__ProductCo__UnitI__04E4BC85",
                         column: x => x.UnitId,
-                        principalTable: "UnitOfMeasuresFunc",
+                        principalTable: "UnitOfMeasures",
                         principalColumn: "UnitId");
                 });
 
@@ -612,7 +612,7 @@ namespace PACHA_FIT.Migrations
                     table.ForeignKey(
                         name: "FK__StockMove__Input__7D439ABD",
                         column: x => x.InputUnitId,
-                        principalTable: "UnitOfMeasuresFunc",
+                        principalTable: "UnitOfMeasures",
                         principalColumn: "UnitId");
                     table.ForeignKey(
                         name: "FK__StockMove__Produ__7C4F7684",
@@ -945,7 +945,7 @@ namespace PACHA_FIT.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "UnitOfMeasuresFunc");
+                name: "UnitOfMeasures");
 
             migrationBuilder.DropTable(
                 name: "Suppliers");

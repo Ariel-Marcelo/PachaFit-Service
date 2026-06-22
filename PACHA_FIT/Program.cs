@@ -4,7 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PACHA_FIT.Api.Middlewares;
 using PACHA_FIT.Core.Application.User;
+using PACHA_FIT.Core.Application.Inventory;
 using PACHA_FIT.Core.Domain.User.Ports;
+using PACHA_FIT.Core.Domain.Inventory.Ports;
 using PACHA_FIT.Infrastructure.Persistence;
 using PACHA_FIT.Infrastructure.Repositories;
 using PACHA_FIT.Infrastructure.Services;
@@ -47,6 +49,16 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddSingleton<IPasswordService, BCryptPasswordService>();
+
+// Inventory
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+builder.Services.AddScoped<IUnitOfMeasureRepository, UnitOfMeasureRepository>();
+
+builder.Services.AddScoped<ProductsService>();
+builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<UnitOfMeasureService>();
+builder.Services.AddSingleton<AdjustmentReasons>();
 
 var host = builder.Build();
 

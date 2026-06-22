@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,7 +12,7 @@ namespace PACHA_FIT.Migrations
         {
             migrationBuilder.AddColumn<bool>(
                 name: "IsActive",
-                table: "UnitOfMeasuresFunc",
+                table: "UnitOfMeasures",
                 type: "bit",
                 nullable: false,
                 defaultValue: true);
@@ -23,7 +23,7 @@ namespace PACHA_FIT.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "IsActive",
-                table: "UnitOfMeasuresFunc");
+                table: "UnitOfMeasures");
         }
     }
 }
