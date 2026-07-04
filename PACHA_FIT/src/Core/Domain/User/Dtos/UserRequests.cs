@@ -14,11 +14,12 @@ public record UserRequests(
     string? RoleName = null
 );
 
-public record UserSearchCriteria(
-    int? UserId,
-    string? Email,
-    string? UserName
-);
+public record UserSearchCriteria
+{
+    public int? UserId { get; init; }
+    public string? Email { get; init; }
+    public string? UserName { get; init; }
+}
 
 public record UserUpdateInfo(
     string? Email = null,
@@ -31,11 +32,7 @@ public record UserUpdateInfo(
     bool? IsActive = null
 );
 
-public record SearchingUser
-{
-    public string Email {get; init;} = null!;
-    public string Role { get; init; } = null!;
-}
+
 
 public record NewUserRegistration(
     string Email,

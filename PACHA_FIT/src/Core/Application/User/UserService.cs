@@ -25,7 +25,7 @@ public class UserService : IUserService
 
     public async Task<Result<string>> UpdateUser(int userId, UserUpdateInfo updateInfo)
     {
-        var user = await _userRepository.GetOneAsync(new UserSearchCriteria(userId, null, null));
+        var user = await _userRepository.GetOneAsync(new UserSearchCriteria { UserId = userId });
         if (user == null) {
             return Result<string>.Failure("Usuario no encontrado", ErrorType.NotFound);
         }

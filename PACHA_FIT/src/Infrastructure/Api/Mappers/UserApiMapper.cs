@@ -1,6 +1,6 @@
-﻿using PACHA_FIT.Core.Domain.User;
+using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Dtos;
-using PACHA_FIT.Infrastructure.Nswag;
+using PACHA_FIT.Infrastructure.Api.Dtos;
 using Riok.Mapperly.Abstractions;
 using EntityUser = PACHA_FIT.Infrastructure.Persistence.Entities.User;
 

@@ -28,7 +28,7 @@ public class UserRepository : IUserRepository
             query = query.Where(u => u.Email == criteria.Email);
 
         if (!string.IsNullOrEmpty(criteria.UserName))
-            query = query.Where(u => u.Email == criteria.UserName);
+            query = query.Where(u => u.FullName != null && u.FullName.Contains(criteria.UserName));
 
         var user = await query.FirstOrDefaultAsync();
         return UserApiMapper.ToUserRequests(user);

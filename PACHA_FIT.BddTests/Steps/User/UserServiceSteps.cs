@@ -47,7 +47,7 @@ public class UserServiceSteps
     [When(@"I request the user with ID (.*)")]
     public async Task WhenIRequestTheUserWithID(int userId)
     {
-        _getUserResult = await _userService.GetUserAsync(new UserSearchCriteria(userId, null, null));
+        _getUserResult = await _userService.GetUserAsync(new UserSearchCriteria { UserId = userId });
         if (!_getUserResult.IsSuccess)
         {
             _scenarioContext["ErrorMessage"] = _getUserResult.Error;
