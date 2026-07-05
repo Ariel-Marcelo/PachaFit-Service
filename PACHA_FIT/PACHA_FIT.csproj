@@ -50,5 +50,8 @@
     <Folder Include="src\Core\Domain\Shared\Exceptions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PACHA_FIT.Generators\PACHA_FIT.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
 
 </Project>

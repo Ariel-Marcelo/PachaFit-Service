@@ -2,10 +2,9 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 
-namespace PACHA_FIT.Api.Middlewares;
+namespace PACHA_FIT.Infrastructure.Api.Middlewares;
 
 public class ResultMappingMiddleware : IFunctionsWorkerMiddleware
 {

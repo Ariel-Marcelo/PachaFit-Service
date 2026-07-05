@@ -6,7 +6,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
-namespace PACHA_FIT.Api.Middlewares;
+namespace PACHA_FIT.Infrastructure.Api.Middlewares;
 
 public class ExceptionHandlerMiddleware: IFunctionsWorkerMiddleware
 {

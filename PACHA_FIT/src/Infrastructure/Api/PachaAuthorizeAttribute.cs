@@ -1,4 +1,4 @@
-﻿namespace PACHA_FIT.Api;
+﻿namespace PACHA_FIT.Infrastructure.Api;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class PachaAuthorizeAttribute : Attribute

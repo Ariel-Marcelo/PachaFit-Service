@@ -14,7 +14,7 @@ namespace PACHA_FIT.Infrastructure.Api.Functions.User;
 public class ProfileFunc(IUserService userService)
 {
     [Function("UpdateProfile")]
-    [PachaAuthorize]
+    [PachaAuthorize(Roles = "User")]
     public async Task<Result<string>> RunUpdateProfile(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/profile")] HttpRequest req, 
         FunctionContext executionContext)
@@ -39,7 +39,7 @@ public class ProfileFunc(IUserService userService)
     }
 
     [Function("ChangePassword")]
-    [PachaAuthorize]
+    [PachaAuthorize (Roles = "User")]
     public async Task<Result<string>> RunChangePassword(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/profile/change-password")] HttpRequest req, 
         FunctionContext executionContext)

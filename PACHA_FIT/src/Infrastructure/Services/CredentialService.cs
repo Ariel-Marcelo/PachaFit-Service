@@ -43,7 +43,7 @@ public class CredentialService : ICredentialService
         return tokenHandler.WriteToken(token);
     }
 
-    public ClaimsPrincipal? ValidateToken(string token)
+    public ClaimsPrincipal? GetTokenClaims(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_secretKey);

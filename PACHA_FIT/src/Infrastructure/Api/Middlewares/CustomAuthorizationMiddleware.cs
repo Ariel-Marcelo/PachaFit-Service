@@ -1,21 +1,18 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using PACHA_FIT.Api.Functions;
-using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Api;
 
-namespace PACHA_FIT.Api.Middlewares;
+namespace PACHA_FIT.Infrastructure.Api.Middlewares;
 
 public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
 {
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
     {
-        var targetMethod = context.GetTargetFunctionMethod();
-        var authAttribute = targetMethod.GetCustomAttributes(typeof(PachaAuthorizeAttribute), true)
-            .FirstOrDefault() as PachaAuthorizeAttribute;
+        var functionName = context.FunctionDefinition.Name;
 
-        if (authAttribute == null)
+        if (!GeneratedAuthorizationMetadata.PolicyMap.TryGetValue(functionName, out var requiredRoles))
         {
             await next(context);
             return;
@@ -29,10 +26,9 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
             return;
         } 
 
-        if (!string.IsNullOrEmpty(authAttribute.Roles))
+        if (requiredRoles.Length > 0)
         {
-            var roles = authAttribute.Roles.Split(',');
-            if (!roles.Any(role => user.IsInRole(role.Trim())))
+            if (!requiredRoles.Any(role => user.IsInRole(role)))
             {
                 await SetForbiddenResponse(context);
                 return;
