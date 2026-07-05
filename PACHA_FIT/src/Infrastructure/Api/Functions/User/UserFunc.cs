@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using PACHA_FIT.Api;
 using PACHA_FIT.Api.Mappers;
 using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Api.Dtos;
@@ -23,24 +24,16 @@ public class UserFunc
     }
 
     [Function("GetUsers")]
-    public async Task<ResultDto<UserResponseDto>> RunGetUsers(
+    public async Task<Result<UserDto>> RunGetUsers(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/users")] HttpRequest req)
     {
         var criteria = QueryMapper.Map<UserSearchCriteria>(req);
-        var result = await _userService.GetUserAsync(criteria);
-
-        return new ResultDto<UserResponseDto>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value != null ? UserApiMapper.ToUserResponseDto(result.Value) : null,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _userService.GetUserAsync(criteria);
     }
 
     [Function("UpdateProfile")]
     [PachaAuthorize]
-    public async Task<ResultDto<string>> RunUpdateProfile(
+    public async Task<Result<string>> RunUpdateProfile(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/profile/{userId}")] HttpRequest req, 
         string userId,
         FunctionContext executionContext)
@@ -50,18 +43,18 @@ public class UserFunc
 
         if (currentUserId != userId)
         {
-             return new ResultDto<string> { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = ErrorType.Unauthorized };
+             return Result<string>.Failure("No tienes permisos para modificar este perfil", ErrorType.Unauthorized);
         }
 
         var request = await req.ReadFromJsonAsync<UpdateProfileRequest>();
         if (request == null)
         {
-            return new ResultDto<string> { IsSuccess = false, Error = "Invalid request body", StatusCode = ErrorType.BadRequest };
+            return Result<string>.Failure("Invalid request body", ErrorType.BadRequest);
         }
 
         if (!int.TryParse(userId, out int id))
         {
-            return new ResultDto<string> { IsSuccess = false, Error = "Id inválido", StatusCode = ErrorType.BadRequest };
+            return Result<string>.Failure("Id inválido", ErrorType.BadRequest);
         }
 
         var updateInfo = new UserUpdateInfo(
@@ -73,20 +66,12 @@ public class UserFunc
             PhoneNumber: request.PhoneNumber
         );
 
-        var result = await _userService.UpdateUser(id, updateInfo);
-        
-        return new ResultDto<string>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _userService.UpdateUser(id, updateInfo);
     }
     
     [Function("UpdateUser_Admin")]
     [PachaAuthorize]
-    public async Task<ResultDto<string>> RunUpdateUserAdmin(
+    public async Task<Result<string>> RunUpdateUserAdmin(
         [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/user/{userId}")] HttpRequest req, 
         string userId,
         FunctionContext executionContext)
@@ -96,18 +81,18 @@ public class UserFunc
 
         if (!isAdmin)
         {
-            return new ResultDto<string> { IsSuccess = false, Error = "No tienes permisos para modificar este perfil", StatusCode = ErrorType.Unauthorized };
+            return Result<string>.Failure("No tienes permisos para modificar este perfil", ErrorType.Unauthorized);
         }
 
         var request = await req.ReadFromJsonAsync<UpdateUserRequest>();
         if (request == null)
         {
-            return new ResultDto<string> { IsSuccess = false, Error = "Invalid request body", StatusCode = ErrorType.BadRequest };
+            return Result<string>.Failure("Invalid request body", ErrorType.BadRequest);
         }
 
         if (!int.TryParse(userId, out int id))
         {
-            return new ResultDto<string> { IsSuccess = false, Error = "Id inválido", StatusCode = ErrorType.BadRequest };
+            return Result<string>.Failure("Id inválido", ErrorType.BadRequest);
         }
 
         var updateInfo = new UserUpdateInfo(
@@ -115,14 +100,6 @@ public class UserFunc
             IsActive: request.IsActive
         );
 
-        var result = await _userService.UpdateUser(id, updateInfo);
-
-        return new ResultDto<string>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _userService.UpdateUser(id, updateInfo);
     }
 }

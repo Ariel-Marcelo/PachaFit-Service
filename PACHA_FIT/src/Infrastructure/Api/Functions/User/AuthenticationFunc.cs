@@ -3,9 +3,10 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using PACHA_FIT.Api;
 using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Api.Dtos;
-using UserApiMapper = PACHA_FIT.Api.Mappers.UserApiMapper;
+using UserApiMapper = PACHA_FIT.Infrastructure.Api.Mappers.UserApiMapper;
 
 namespace PACHA_FIT.Api.Functions.User;
 
@@ -21,14 +22,14 @@ public class AuthenticationFunc
     }
 
     [Function("authentication")]
-    public async Task<ResultDto<LoginResponse>> RunLogin(
+    public async Task<Result<LoginResponse>> RunLogin(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/auth")] HttpRequest req)
     {
         var loginData = await req.ReadFromJsonAsync<LoginRequest>();
 
         if (loginData == null)
         {
-             return new ResultDto<LoginResponse> { Error = "Request inválido", StatusCode = ErrorType.BadRequest };
+             return Result<LoginResponse>.Failure("Request inválido", ErrorType.BadRequest);
         }
         
         CustomObjectValidator.Validate(loginData);
@@ -36,43 +37,36 @@ public class AuthenticationFunc
         var credentials = UserApiMapper.LoginRequestToCredentials(loginData);
         var result = await _authService.LoginUser(credentials);
 
-        return new ResultDto<LoginResponse>
+        if (!result.IsSuccess || result.Value == null)
         {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value != null ? new LoginResponse
-            {
-                Email = result.Value.Email,
-                FullName = result.Value.FullName,
-                Token = result.Value.Token,
-                RoleName = result.Value.RoleName
-            } : null,
-            Error = result.Error,
-            StatusCode = result.StatusCode
+            return Result<LoginResponse>.Failure(result.Error ?? "Error al iniciar sesión", result.StatusCode);
+        }
+
+        var response = new LoginResponse
+        {
+            Email = result.Value.Email,
+            FullName = result.Value.FullName,
+            Token = result.Value.Token,
+            RoleName = result.Value.RoleName
         };
+
+        return Result<LoginResponse>.Success(response);
     }
 
     [Function("SignUp")]
-    public async Task<ResultDto<string>> RunSignUp(
+    public async Task<Result<string>> RunSignUp(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/users")] HttpRequest req)
     {
         var request = await req.ReadFromJsonAsync<NewUserRequest>();
         
         if (request == null) 
         {
-            return new ResultDto<string> { Error = "Petición sin body", StatusCode = ErrorType.BadRequest };
+            return Result<string>.Failure("Petición sin body", ErrorType.BadRequest);
         }
 
         CustomObjectValidator.Validate(request);
     
         var registration = UserApiMapper.NewUserRequestToRegistration(request);
-        var result = await _authService.SignUp(registration);
-
-        return new ResultDto<string>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _authService.SignUp(registration);
     }
 }

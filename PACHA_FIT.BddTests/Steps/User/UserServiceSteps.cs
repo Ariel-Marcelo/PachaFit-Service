@@ -14,7 +14,7 @@ public class UserServiceSteps
     private readonly IUserRepository _userRepository;
     private readonly UserService _userService;
     private readonly ScenarioContext _scenarioContext;
-    private Result<UserRequests>? _getUserResult;
+    private Result<UserDto>? _getUserResult;
     private Result<string>? _updateUserResult;
 
     public UserServiceSteps(ScenarioContext scenarioContext, ScenarioDependencies dependencies)
@@ -27,21 +27,24 @@ public class UserServiceSteps
     [Given(@"a user exists with ID (.*) and email ""(.*)""")]
     public void GivenAUserExistsWithIDAndEmail(int userId, string email)
     {
-        var user = new UserRequests(userId, email, "Test User", 1, true, DateTimeOffset.Now, "DNI", "12345678", "Address", "123456789");
-        _userRepository.GetOneAsync(Arg.Is<UserSearchCriteria>(c => c.UserId == userId)).Returns(Task.FromResult<UserRequests?>(user));
+        var user = new UserDto(userId, email, "Test User", 1, true, DateTimeOffset.Now, "DNI", "12345678", "Address", "123456789");
+        _userRepository.GetOneAsync(Arg.Is<UserSearchCriteria>(c => c.UserId == userId)).Returns(Task.FromResult<UserDto?>(user));
+        _userRepository.UpdateUser(userId, Arg.Any<UserUpdateInfo>()).Returns(Task.FromResult(true));
     }
 
     [Given(@"a user exists with ID (.*)")]
     public void GivenAUserExistsWithID(int userId)
     {
-        var user = new UserRequests(userId, "test@example.com", "Test User", 1, true, DateTimeOffset.Now, "DNI", "12345678", "Address", "123456789");
-        _userRepository.GetOneAsync(Arg.Is<UserSearchCriteria>(c => c.UserId == userId)).Returns(Task.FromResult<UserRequests?>(user));
+        var user = new UserDto(userId, "test@example.com", "Test User", 1, true, DateTimeOffset.Now, "DNI", "12345678", "Address", "123456789");
+        _userRepository.GetOneAsync(Arg.Is<UserSearchCriteria>(c => c.UserId == userId)).Returns(Task.FromResult<UserDto?>(user));
+        _userRepository.UpdateUser(userId, Arg.Any<UserUpdateInfo>()).Returns(Task.FromResult(true));
     }
 
     [Given(@"a user with ID (.*) does not exist")]
     public void GivenAUserWithIDDoesNotExist(int userId)
     {
-        _userRepository.GetOneAsync(Arg.Is<UserSearchCriteria>(c => c.UserId == userId)).Returns(Task.FromResult<UserRequests?>(null));
+        _userRepository.GetOneAsync(Arg.Is<UserSearchCriteria>(c => c.UserId == userId)).Returns(Task.FromResult<UserDto?>(null));
+        _userRepository.UpdateUser(userId, Arg.Any<UserUpdateInfo>()).Returns(Task.FromResult(false));
     }
 
     [When(@"I request the user with ID (.*)")]

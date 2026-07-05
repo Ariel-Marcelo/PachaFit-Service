@@ -3,6 +3,8 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using PACHA_FIT.Api.Mappers;
 using PACHA_FIT.Core.Application.Inventory;
+using PACHA_FIT.Core.Domain.Shared;
+using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 using PACHA_FIT.Infrastructure.Api.Dtos;
 
 namespace PACHA_FIT.Api.Functions.Inventory;
@@ -37,83 +39,58 @@ public class InventoryFunc
     }
 
     [Function("Inventory_GetUnits")]
-    public async Task<ResultDto<UnitOfMeasureGroupedDto>> RunGetUnits(
+    public async Task<Result<UnitOfMeasureGroupedDto>> RunGetUnits(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/inventory/units")] HttpRequest req)
     {
         var result = await _unitOfMeasureService.GetAllActiveUnitsAsync();
-        return new ResultDto<UnitOfMeasureGroupedDto>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value?.ToApi(),
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return result.IsSuccess && result.Value != null
+            ? Result<UnitOfMeasureGroupedDto>.Success(result.Value.ToApi())
+            : Result<UnitOfMeasureGroupedDto>.Failure(result.Error!, result.StatusCode);
     }
 
     [Function("Inventory_ConvertUnit")]
-    public async Task<ResultDto<decimal>> RunConvertUnit(
+    public async Task<Result<decimal>> RunConvertUnit(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/inventory/units/convert")] HttpRequest req)
     {
-        if (!double.TryParse(req.Query["quantity"], out double quantity)) return new ResultDto<decimal> { IsSuccess = false, Error = "Invalid quantity" };
+        if (!double.TryParse(req.Query["quantity"], out double quantity)) 
+            return Result<decimal>.Failure("Invalid quantity", ErrorType.BadRequest);
+            
         string fromUnit = req.Query["fromUnit"]!;
         string toUnit = req.Query["toUnit"]!;
 
-        var result = await _unitOfMeasureService.Convert((decimal)quantity, fromUnit, toUnit);
-        return new ResultDto<decimal>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _unitOfMeasureService.Convert((decimal)quantity, fromUnit, toUnit);
     }
 
     [Function("Inventory_CreateProduct")]
-    public async Task<ResultDto<ProductResponse>> RunCreateProduct(
+    public async Task<Result<ProductResponse>> RunCreateProduct(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/inventory/products")] HttpRequest req)
     {
         var body = await req.ReadFromJsonAsync<ProductCreateRequest>();
-        if (body == null) return new ResultDto<ProductResponse> { IsSuccess = false, Error = "Invalid request body" };
+        if (body == null) 
+            return Result<ProductResponse>.Failure("Invalid request body", ErrorType.BadRequest);
 
         var domainRequest = body.ToDomain();
         var result = await _productsService.CreateProduct(domainRequest);
-        return new ResultDto<ProductResponse>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value?.ToApi(),
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return result.IsSuccess && result.Value != null
+            ? Result<ProductResponse>.Success(result.Value.ToApi())
+            : Result<ProductResponse>.Failure(result.Error!, result.StatusCode);
     }
 
     [Function("Inventory_DeactivateProduct")]
-    public async Task<ResultDto<bool>> RunDeactivateProduct(
+    public async Task<Result<bool>> RunDeactivateProduct(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/inventory/products/{sku}/deactivate")] HttpRequest req, string sku)
     {
-        var result = await _productsService.DeactivateProduct(sku);
-        return new ResultDto<bool>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _productsService.DeactivateProduct(sku);
     }
 
     [Function("Inventory_DispatchStock")]
-    public async Task<ResultDto<string>> RunDispatchStock(
+    public async Task<Result<string>> RunDispatchStock(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/inventory/dispatch")] HttpRequest req)
     {
         var body = await req.ReadFromJsonAsync<DispatchStockRequest>();
-        if (body == null) return new ResultDto<string> { IsSuccess = false, Error = "Invalid request body" };
+        if (body == null) 
+            return Result<string>.Failure("Invalid request body", ErrorType.BadRequest);
 
-        var result = await _inventoryService.DispatchStock(body.ProductId, (decimal)body.Quantity, body.UnitAbbreviation);
-        return new ResultDto<string>
-        {
-            IsSuccess = result.IsSuccess,
-            Value = result.Value,
-            Error = result.Error,
-            StatusCode = result.StatusCode
-        };
+        return await _inventoryService.DispatchStock(body.ProductId, (decimal)body.Quantity, body.UnitAbbreviation);
     }
 }

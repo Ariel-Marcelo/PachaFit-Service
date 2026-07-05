@@ -1,6 +1,6 @@
 namespace PACHA_FIT.Core.Domain.User.Dtos;
 
-public record UserRequests(
+public record UserDto(
     int UserId,
     string Email,
     string? FullName,
@@ -31,8 +31,6 @@ public record UserUpdateInfo(
     int? RoleId = null,
     bool? IsActive = null
 );
-
-
 
 public record NewUserRegistration(
     string Email,

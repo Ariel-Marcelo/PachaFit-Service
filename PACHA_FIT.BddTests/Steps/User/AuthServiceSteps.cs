@@ -5,7 +5,6 @@ using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
-using NUnit.Framework;
 
 namespace PACHA_FIT.BddTests.Steps.User;
 

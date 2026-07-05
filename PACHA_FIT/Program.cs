@@ -9,6 +9,7 @@ using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Core.Domain.Inventory.Ports;
 using PACHA_FIT.Infrastructure.Persistence;
 using PACHA_FIT.Infrastructure.Repositories;
+using PACHA_FIT.Infrastructure.Repositories.UserFilters;
 using PACHA_FIT.Infrastructure.Services;
 
 var builder = FunctionsApplication.CreateBuilder(args);
@@ -46,6 +47,9 @@ builder.Services.AddDbContext<PachaFitContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserFilter, UserIdFilter>();
+builder.Services.AddScoped<IUserFilter, UserEmailFilter>();
+builder.Services.AddScoped<IUserFilter, UserUserNameFilter>();
 
 builder.Services.AddScoped<ICredentialService, CredentialService>();
 builder.Services.AddSingleton<IPasswordService, BCryptPasswordService>();

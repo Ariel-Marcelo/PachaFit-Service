@@ -6,6 +6,6 @@ namespace PACHA_FIT.Core.Domain.User.Ports;
 
 public interface IUserService
 {
-    Task<Result<UserRequests>> GetUserAsync(UserSearchCriteria criteria);
+    Task<Result<UserDto>> GetUserAsync(UserSearchCriteria criteria);
     Task<Result<string>> UpdateUser(int userId, UserUpdateInfo updateInfo);
 }

@@ -73,7 +73,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResultDtoOfUserResponseDto'
+                $ref: '#/components/schemas/ResultDtoOfUserDto'
     post:
       tags:
         - Auth
@@ -301,7 +301,7 @@ components:
         isActive:
           type: boolean
           nullable: true
-    UserResponseDto:
+    UserDto:
       type: object
       properties:
         userId:
@@ -454,88 +454,60 @@ components:
     ResultDtoOfString:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
+        data:
           type: string
           nullable: true
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfLoginResponse:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
+        data:
           $ref: '#/components/schemas/LoginResponse'
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
-    ResultDtoOfUserResponseDto:
+    ResultDtoOfUserDto:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
-          $ref: '#/components/schemas/UserResponseDto'
+        data:
+          $ref: '#/components/schemas/UserDto'
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfUnitOfMeasureGroupedDto:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
+        data:
           $ref: '#/components/schemas/UnitOfMeasureGroupedDto'
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfDecimal:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
+        data:
           type: number
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfProductResponse:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
+        data:
           $ref: '#/components/schemas/ProductResponse'
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
     ResultDtoOfBoolean:
       type: object
       properties:
-        isSuccess:
-          type: boolean
-        value:
+        data:
           type: boolean
         error:
           type: string
           nullable: true
-        statusCode:
-          $ref: '#/components/schemas/ErrorType'
     ErrorType:
       type: string
       enum:

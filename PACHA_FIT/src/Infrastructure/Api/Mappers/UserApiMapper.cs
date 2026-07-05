@@ -4,7 +4,7 @@ using PACHA_FIT.Infrastructure.Api.Dtos;
 using Riok.Mapperly.Abstractions;
 using EntityUser = PACHA_FIT.Infrastructure.Persistence.Entities.User;
 
-namespace PACHA_FIT.Api.Mappers;
+namespace PACHA_FIT.Infrastructure.Api.Mappers;
 
 [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.None)]
 public static partial class UserApiMapper
@@ -18,11 +18,7 @@ public static partial class UserApiMapper
     public static partial NewUserRegistration NewUserRequestToRegistration(NewUserRequest request);
     
     [MapProperty(nameof(EntityUser.Role) + "." + nameof(EntityUser.Role.Name), "RoleName")]
-    public static partial UserRequests? ToUserRequests(EntityUser? user);
-    
-    
-    // To Response
-    public static partial UserResponseDto ToUserResponseDto(UserRequests user);
+    public static partial UserDto? ToUserDto(EntityUser? user);
 
     
     // ToEntities

@@ -1,53 +1,47 @@
 using Microsoft.EntityFrameworkCore;
-using PACHA_FIT.Api.Mappers;
 using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Dtos;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Persistence;
 using EntityUser = PACHA_FIT.Infrastructure.Persistence.Entities.User;
 
+using PACHA_FIT.Infrastructure.Repositories.UserFilters;
+using UserApiMapper = PACHA_FIT.Infrastructure.Api.Mappers.UserApiMapper;
+
 namespace PACHA_FIT.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(PachaFitContext context, IEnumerable<IUserFilter> filters) : IUserRepository
 {
-    private readonly PachaFitContext _context;
-
-    public UserRepository(PachaFitContext context)
+    public async Task<UserDto?> GetOneAsync(UserSearchCriteria criteria)
     {
-        _context = context;
-    }
+        IQueryable<EntityUser> query = context.Users.Include(u => u.Role);
 
-    public async Task<UserRequests?> GetOneAsync(UserSearchCriteria criteria)
-    {
-        IQueryable<EntityUser> query = _context.Users.Include(u => u.Role);
-
-        if (criteria.UserId.HasValue)
-            query = query.Where(u => u.UserId == criteria.UserId.Value);
-
-        if (!string.IsNullOrEmpty(criteria.Email))
-            query = query.Where(u => u.Email == criteria.Email);
-
-        if (!string.IsNullOrEmpty(criteria.UserName))
-            query = query.Where(u => u.FullName != null && u.FullName.Contains(criteria.UserName));
+        foreach (var filter in filters)
+        {
+            if (filter.CanApply(criteria))
+            {
+                query = filter.Apply(query, criteria);
+            }
+        }
 
         var user = await query.FirstOrDefaultAsync();
-        return UserApiMapper.ToUserRequests(user);
+        return UserApiMapper.ToUserDto(user);
     }
 
-    public async Task UpdateUser(int userId, UserUpdateInfo updateInfo)
+    public async Task<bool> UpdateUser(int userId, UserUpdateInfo updateInfo)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-        if (user != null)
-        {
-            UserApiMapper.ApplyUpdate(updateInfo, user);
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-        }
+        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+        if (user == null) return false;
+
+        UserApiMapper.ApplyUpdate(updateInfo, user);
+        context.Users.Update(user);
+        await context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<InternalUserResponse?> GetInternalUserAsync(string username)
     {
-        var user = await _context.Users
+        var user = await context.Users
             .Include(u => u.Role)
             .FirstOrDefaultAsync(u => u.Email == username);
 
@@ -57,7 +51,7 @@ public class UserRepository : IUserRepository
     public async Task SaveUser(User user)
     {
         var entityUser = UserApiMapper.ToEntityUser(user);
-        _context.Users.Add(entityUser);
-        await _context.SaveChangesAsync();
+        context.Users.Add(entityUser);
+        await context.SaveChangesAsync();
     }
 }

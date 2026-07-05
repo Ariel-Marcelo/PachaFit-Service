@@ -76,35 +76,4 @@ public class UpdateUserRequest
     public bool? IsActive { get; set; }
 }
 
-public class UserResponseDto
-{
-    [JsonPropertyName("userId")]
-    public int UserId { get; set; }
 
-    [JsonPropertyName("email")]
-    public string Email { get; set; } = null!;
-
-    [JsonPropertyName("fullName")]
-    public string FullName { get; set; } = null!;
-
-    [JsonPropertyName("roleId")]
-    public int? RoleId { get; set; }
-
-    [JsonPropertyName("isActive")]
-    public bool? IsActive { get; set; }
-
-    [JsonPropertyName("createdAt")]
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    [JsonPropertyName("identificationType")]
-    public string? IdentificationType { get; set; }
-
-    [JsonPropertyName("identificationNumber")]
-    public string? IdentificationNumber { get; set; }
-
-    [JsonPropertyName("address")]
-    public string? Address { get; set; }
-
-    [JsonPropertyName("phoneNumber")]
-    public string? PhoneNumber { get; set; }
-}
