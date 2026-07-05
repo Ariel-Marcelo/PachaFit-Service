@@ -9,6 +9,9 @@ public interface IUserRepository
     Task<bool> UpdateUser(int userId, UserUpdateInfo updateInfo);
     
     Task<InternalUserResponse?> GetInternalUserAsync(string username);
+    Task<InternalUserResponse?> GetInternalUserByIdAsync(int userId);
+    
+    Task<bool> UpdatePasswordAsync(int userId, string passwordHash);
     
     Task SaveUser(User user);
 }

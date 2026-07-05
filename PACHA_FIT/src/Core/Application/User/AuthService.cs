@@ -24,7 +24,7 @@ public class AuthService : IAuthService
     {
         var user = await _userRepository.GetInternalUserAsync(credentials.Username);
         return user == null
-            ? Result<AuthSession>.Failure("Usuario no encontrado", ErrorType.Unauthorized)
+            ? Result<AuthSession>.Failure(CommonMessages.UserNotFound, ErrorType.Unauthorized)
             : AuthSession.Authenticate(user!, credentials.Password, _passwordService, _credentialService);
     }
 
@@ -33,12 +33,36 @@ public class AuthService : IAuthService
         var existingUser = await _userRepository.GetInternalUserAsync(registration.Email);
         if (existingUser != null)
         {
-            return Result<string>.Failure("El usuario ya existe", ErrorType.Conflict);
+            return Result<string>.Failure(CommonMessages.UserAlreadyExists, ErrorType.Conflict);
+        }
+
+        if (!IsPasswordStrong(registration.Password))
+        {
+            return Result<string>.Failure(CommonMessages.Validation.PasswordTooWeak, ErrorType.BadRequest);
         }
 
         var user = Domain.User.User.CreateFromRegistration(registration, _passwordService);
         await _userRepository.SaveUser(user);
         
-        return Result<string>.Success("Usuario registrado correctamente");
+        return Result<string>.Success(CommonMessages.Auth.RegistrationSuccess);
+    }
+
+    private static bool IsPasswordStrong(string password)
+    {
+        if (string.IsNullOrEmpty(password) || password.Length < 8)
+            return false;
+
+        bool hasUpper = false;
+        bool hasDigit = false;
+
+        foreach (char c in password)
+        {
+            if (char.IsUpper(c)) hasUpper = true;
+            if (char.IsDigit(c)) hasDigit = true;
+
+            if (hasUpper && hasDigit) return true;
+        }
+
+        return false;
     }
 }

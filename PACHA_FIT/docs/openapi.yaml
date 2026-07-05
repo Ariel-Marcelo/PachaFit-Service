@@ -6,24 +6,37 @@ servers:
   - url: /api/v1
     description: Default Azure Functions prefix
 paths:
-  /profile/{userId}:
+  /profile:
     put:
       tags:
         - User
       summary: Update user profile
       operationId: User_UpdateProfile
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDtoOfString'
+  /profile/change-password:
+    post:
+      tags:
+        - User
+      summary: Change user password
+      operationId: User_ChangePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
       responses:
         '200':
           description: OK
@@ -292,6 +305,17 @@ components:
         phoneNumber:
           type: string
           nullable: true
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
     UpdateUserRequest:
       type: object
       properties:

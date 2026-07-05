@@ -3,31 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace PACHA_FIT.Infrastructure.Api.Dtos;
 
-public class LoginRequest
-{
-    [JsonPropertyName("username")]
-    [Required(AllowEmptyStrings = true)]
-    public string Username { get; set; } = null!;
 
-    [JsonPropertyName("password")]
-    [Required(AllowEmptyStrings = true)]
-    public string Password { get; set; } = null!;
-}
-
-public class LoginResponse
-{
-    [JsonPropertyName("email")]
-    public string Email { get; set; } = null!;
-
-    [JsonPropertyName("fullName")]
-    public string? FullName { get; set; }
-
-    [JsonPropertyName("token")]
-    public string Token { get; set; } = null!;
-
-    [JsonPropertyName("roleName")]
-    public string? RoleName { get; set; }
-}
 
 public class NewUserRequest
 {
@@ -74,6 +50,17 @@ public class UpdateUserRequest
 
     [JsonPropertyName("isActive")]
     public bool? IsActive { get; set; }
+}
+
+public class ChangePasswordRequest
+{
+    [JsonPropertyName("currentPassword")]
+    [Required(AllowEmptyStrings = false)]
+    public string CurrentPassword { get; set; } = null!;
+
+    [JsonPropertyName("newPassword")]
+    [Required(AllowEmptyStrings = false)]
+    public string NewPassword { get; set; } = null!;
 }
 
 

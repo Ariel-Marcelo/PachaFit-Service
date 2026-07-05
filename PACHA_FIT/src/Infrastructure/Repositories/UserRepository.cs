@@ -48,6 +48,26 @@ public class UserRepository(PachaFitContext context, IEnumerable<IUserFilter> fi
         return UserApiMapper.ToInternalUser(user);
     }
 
+    public async Task<InternalUserResponse?> GetInternalUserByIdAsync(int userId)
+    {
+        var user = await context.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        return UserApiMapper.ToInternalUser(user);
+    }
+
+    public async Task<bool> UpdatePasswordAsync(int userId, string passwordHash)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+        if (user == null)
+            return false;
+
+        user.PasswordHash = passwordHash;
+        await context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task SaveUser(User user)
     {
         var entityUser = UserApiMapper.ToEntityUser(user);

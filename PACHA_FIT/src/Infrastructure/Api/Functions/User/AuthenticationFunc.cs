@@ -4,53 +4,37 @@ using Microsoft.Extensions.Logging;
 using PACHA_FIT.Api;
 using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
+using PACHA_FIT.Core.Domain.User;
 using PACHA_FIT.Core.Domain.User.Ports;
 using PACHA_FIT.Infrastructure.Api.Dtos;
 using UserApiMapper = PACHA_FIT.Infrastructure.Api.Mappers.UserApiMapper;
 
-namespace PACHA_FIT.Api.Functions.User;
+namespace PACHA_FIT.Infrastructure.Api.Functions.User;
 
-public class AuthenticationFunc
+public class AuthenticationFunc(ILogger<AuthenticationFunc> logger, IAuthService authService)
 {
-    private readonly ILogger<AuthenticationFunc> _logger;
-    private readonly IAuthService _authService;
-
-    public AuthenticationFunc(ILogger<AuthenticationFunc> logger, IAuthService authService)
-    {
-        _logger = logger;
-        _authService = authService;
-    }
+    private readonly ILogger<AuthenticationFunc> _logger = logger;
 
     [Function("authentication")]
-    public async Task<Result<LoginResponse>> RunLogin(
+    public async Task<Result<AuthSession>> RunLogin(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/auth")] HttpRequest req)
     {
-        var loginData = await req.ReadFromJsonAsync<LoginRequest>();
+        var credentials = await req.ReadFromJsonAsync<AuthCredentials>();
 
-        if (loginData == null)
+        if (credentials == null)
+             return Result<AuthSession>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
+        
+        if (string.IsNullOrEmpty(credentials.Username) || string.IsNullOrEmpty(credentials.Password))
         {
-             return Result<LoginResponse>.Failure("Request inválido", ErrorType.BadRequest);
+             return Result<AuthSession>.Failure("El usuario y la contraseña son requeridos", ErrorType.BadRequest);
         }
         
-        CustomObjectValidator.Validate(loginData);
-        
-        var credentials = UserApiMapper.LoginRequestToCredentials(loginData);
-        var result = await _authService.LoginUser(credentials);
+        var result = await authService.LoginUser(credentials);
 
         if (!result.IsSuccess || result.Value == null)
-        {
-            return Result<LoginResponse>.Failure(result.Error ?? "Error al iniciar sesión", result.StatusCode);
-        }
+            return Result<AuthSession>.Failure(result.Error ?? "Error al iniciar sesión", result.StatusCode);
 
-        var response = new LoginResponse
-        {
-            Email = result.Value.Email,
-            FullName = result.Value.FullName,
-            Token = result.Value.Token,
-            RoleName = result.Value.RoleName
-        };
-
-        return Result<LoginResponse>.Success(response);
+        return result;
     }
 
     [Function("SignUp")]
@@ -61,12 +45,12 @@ public class AuthenticationFunc
         
         if (request == null) 
         {
-            return Result<string>.Failure("Petición sin body", ErrorType.BadRequest);
+            return Result<string>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
         }
 
         CustomObjectValidator.Validate(request);
     
         var registration = UserApiMapper.NewUserRequestToRegistration(request);
-        return await _authService.SignUp(registration);
+        return await authService.SignUp(registration);
     }
 }

@@ -29,7 +29,7 @@ public class ScenarioDependencies
         InventoryService = new InventoryService(StockMovementRepository);
         UnitOfMeasureService = new UnitOfMeasureService(UnitOfMeasureRepository);
 
-        UserService = new UserService(UserRepository);
+        UserService = new UserService(UserRepository, PasswordService);
         AuthService = new AuthService(CredentialService, UserRepository, PasswordService);
     }
 }

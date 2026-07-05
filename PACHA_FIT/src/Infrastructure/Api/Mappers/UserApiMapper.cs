@@ -13,9 +13,12 @@ public static partial class UserApiMapper
     [MapProperty(nameof(EntityUser.Role) + "." + nameof(EntityUser.Role.Name), "RoleName")]
     public static partial InternalUserResponse? ToInternalUser(EntityUser? user);
     
-    public static partial AuthCredentials LoginRequestToCredentials(LoginRequest request);
+
 
     public static partial NewUserRegistration NewUserRequestToRegistration(NewUserRequest request);
+    
+    public static partial UserUpdateInfo ToUpdateInfo(UpdateProfileRequest request);
+    public static partial UserUpdateInfo ToUpdateInfo(UpdateUserRequest request);
     
     [MapProperty(nameof(EntityUser.Role) + "." + nameof(EntityUser.Role.Name), "RoleName")]
     public static partial UserDto? ToUserDto(EntityUser? user);
@@ -26,7 +29,17 @@ public static partial class UserApiMapper
     
     
     //Utils
-    public static partial void ApplyUpdate(UserUpdateInfo updateInfo, EntityUser user);
+    public static void ApplyUpdate(UserUpdateInfo updateInfo, EntityUser user)
+    {
+        if (updateInfo.Email != null) user.Email = updateInfo.Email;
+        if (updateInfo.FullName != null) user.FullName = updateInfo.FullName;
+        if (updateInfo.IdentificationType != null) user.IdentificationType = updateInfo.IdentificationType;
+        if (updateInfo.IdentificationNumber != null) user.IdentificationNumber = updateInfo.IdentificationNumber;
+        if (updateInfo.Address != null) user.Address = updateInfo.Address;
+        if (updateInfo.PhoneNumber != null) user.PhoneNumber = updateInfo.PhoneNumber;
+        if (updateInfo.RoleId.HasValue) user.RoleId = updateInfo.RoleId.Value;
+        if (updateInfo.IsActive.HasValue) user.IsActive = updateInfo.IsActive.Value;
+    }
     
     
     }

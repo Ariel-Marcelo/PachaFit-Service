@@ -66,7 +66,7 @@ public class UserServiceSteps
             FullName: row.ContainsKey("FullName") ? row["FullName"] : null
         );
 
-        _updateUserResult = await _userService.UpdateUser(userId, updateInfo);
+        _updateUserResult = await _userService.UpdateUserAdminAsync(userId, updateInfo);
         if (!_updateUserResult.IsSuccess)
         {
             _scenarioContext["ErrorMessage"] = _updateUserResult.Error;

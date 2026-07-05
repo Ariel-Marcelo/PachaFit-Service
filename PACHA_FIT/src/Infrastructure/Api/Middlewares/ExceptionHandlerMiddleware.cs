@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using Microsoft.Azure.Functions.Worker;
@@ -47,14 +47,24 @@ public class ExceptionHandlerMiddleware: IFunctionsWorkerMiddleware
                         .Replace("must be a string with a minimum length of", "debe tener una longitud mínima de")
                         .Replace("and a maximum length of", "y una máxima de");
                 }
+
+                var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") 
+                                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") 
+                                  ?? "Production";
                 
-                var errorBody = new 
-                { 
-                    Message = statusCode == HttpStatusCode.BadRequest 
-                        ? "Error de validación en los datos." 
-                        : "Se produjo un error interno en el servidor.",
-                    Details = detail
-                };
+                bool isDevelopment = string.Equals(environment, "Development", StringComparison.OrdinalIgnoreCase);
+
+                object errorBody;
+                if (statusCode == HttpStatusCode.BadRequest)
+                {
+                    errorBody = new { error = detail };
+                }
+                else
+                {
+                    errorBody = isDevelopment 
+                        ? new { error = "Se produjo un error interno en el servidor.", details = ex.ToString() }
+                        : new { error = "Se produjo un error interno en el servidor." };
+                }
 
                 await response.WriteAsJsonAsync(errorBody);
                 context.GetInvocationResult().Value = response;
