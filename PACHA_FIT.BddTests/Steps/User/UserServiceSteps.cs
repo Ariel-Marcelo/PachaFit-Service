@@ -53,7 +53,7 @@ public class UserServiceSteps
         _getUserResult = await _userService.GetUserAsync(new UserSearchCriteria { UserId = userId });
         if (!_getUserResult.IsSuccess)
         {
-            _scenarioContext["ErrorMessage"] = _getUserResult.Error;
+            _scenarioContext["ErrorMessage"] = _getUserResult.Error?.Message;
         }
     }
 
@@ -69,7 +69,7 @@ public class UserServiceSteps
         _updateUserResult = await _userService.UpdateUserAdminAsync(userId, updateInfo);
         if (!_updateUserResult.IsSuccess)
         {
-            _scenarioContext["ErrorMessage"] = _updateUserResult.Error;
+            _scenarioContext["ErrorMessage"] = _updateUserResult.Error?.Message;
         }
     }
 

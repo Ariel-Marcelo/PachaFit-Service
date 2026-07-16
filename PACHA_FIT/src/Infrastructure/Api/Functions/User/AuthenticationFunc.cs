@@ -22,17 +22,17 @@ public class AuthenticationFunc(ILogger<AuthenticationFunc> logger, IAuthService
         var credentials = await req.ReadFromJsonAsync<AuthCredentials>();
 
         if (credentials == null)
-             return Result<AuthSession>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
-        
+            return Result<AuthSession>.Failure(new Error(SystemError.BadRequest, CommonMessages.InvalidRequestBody));
+
         if (string.IsNullOrEmpty(credentials.Username) || string.IsNullOrEmpty(credentials.Password))
         {
-             return Result<AuthSession>.Failure("El usuario y la contraseña son requeridos", ErrorType.BadRequest);
+            return Result<AuthSession>.Failure(new Error(SystemError.BadRequest, "El usuario y la contraseña son requeridos"));
         }
-        
+
         var result = await authService.LoginUser(credentials);
 
-        if (!result.IsSuccess || result.Value == null)
-            return Result<AuthSession>.Failure(result.Error ?? "Error al iniciar sesión", result.StatusCode);
+        if (!result.IsSuccess)
+            return Result<AuthSession>.Failure(result.Error ?? new Error(SystemError.Unexpected, "Error al iniciar sesión"));
 
         return result;
     }
@@ -42,14 +42,14 @@ public class AuthenticationFunc(ILogger<AuthenticationFunc> logger, IAuthService
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/users")] HttpRequest req)
     {
         var request = await req.ReadFromJsonAsync<NewUserRequest>();
-        
-        if (request == null) 
+
+        if (request == null)
         {
-            return Result<string>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
+            return Result<string>.Failure(new Error(SystemError.BadRequest, CommonMessages.InvalidRequestBody));
         }
 
         CustomObjectValidator.Validate(request);
-    
+
         var registration = UserApiMapper.NewUserRequestToRegistration(request);
         return await authService.SignUp(registration);
     }

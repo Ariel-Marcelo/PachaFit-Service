@@ -22,7 +22,7 @@ public class PachaFitContextFactory : IDesignTimeDbContextFactory<PachaFitContex
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<PachaFitContext>();
-        
+
         // Try SqlConnectionString first (standard Azure/manual setting)
         var connectionString = configuration.GetSection("Values")["SqlConnectionString"];
 
@@ -37,7 +37,7 @@ public class PachaFitContextFactory : IDesignTimeDbContextFactory<PachaFitContex
         // Fallback for development if no settings file or variables found
         if (string.IsNullOrEmpty(connectionString))
         {
-             connectionString = "Server=(localdb)\\mssqllocaldb;Database=PachaFitTemp;Trusted_Connection=True;";
+            connectionString = "Server=(localdb)\\mssqllocaldb;Database=PachaFitTemp;Trusted_Connection=True;";
         }
 
         optionsBuilder.UseSqlServer(connectionString);

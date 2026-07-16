@@ -27,7 +27,7 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
         {
             await SetUnauthorizedResponse(context);
             return;
-        } 
+        }
 
         if (!string.IsNullOrEmpty(authAttribute.Roles))
         {
@@ -41,7 +41,7 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
 
         await next(context);
     }
-    
+
     private async Task SetUnauthorizedResponse(FunctionContext context)
     {
         var request = await context.GetHttpRequestDataAsync();
@@ -49,7 +49,7 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
         {
             var response = request.CreateResponse(System.Net.HttpStatusCode.Unauthorized);
             await response.WriteAsJsonAsync(new { Message = "No autenticado. Token faltante o inválido." });
-        
+
             context.GetInvocationResult().Value = response;
         }
     }
@@ -61,7 +61,7 @@ public class CustomAuthorizationMiddleware : IFunctionsWorkerMiddleware
         {
             var response = request.CreateResponse(System.Net.HttpStatusCode.Forbidden);
             await response.WriteAsJsonAsync(new { Message = "No tienes los permisos necesarios (Rol insuficiente)." });
-        
+
             context.GetInvocationResult().Value = response;
         }
     }

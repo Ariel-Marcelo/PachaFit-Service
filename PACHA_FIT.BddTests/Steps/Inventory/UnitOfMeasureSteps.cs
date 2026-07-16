@@ -27,9 +27,9 @@ public class UnitOfMeasureSteps
         _unitService = dependencies.UnitOfMeasureService;
         _repository = dependencies.UnitOfMeasureRepository;
         _scenarioContext = scenarioContext;
-        
+
         // Setup repository to return only active mock units from the shared list
-        _repository.GetAllActiveAsync().Returns(callInfo => 
+        _repository.GetAllActiveAsync().Returns(callInfo =>
         {
             var activeUnits = _mockUnits.Where(u => u.IsActive).ToList();
             return Task.FromResult<IEnumerable<UnitOfMeasureInfo>>(activeUnits);
@@ -114,7 +114,7 @@ public class UnitOfMeasureSteps
     {
         _quantity = quantity;
         _fromUnit = unit;
-        
+
         // Add basic units if not already present for conversion tests
         bool added = false;
         if (!_mockUnits.Any(u => u.Abbreviation == "g")) { _mockUnits.Add(new UnitOfMeasureInfo("Gramos", "g", "masa", 1.0m, true)); added = true; }
@@ -122,7 +122,7 @@ public class UnitOfMeasureSteps
         if (!_mockUnits.Any(u => u.Abbreviation == "qq")) { _mockUnits.Add(new UnitOfMeasureInfo("Quintal", "qq", "masa", 45400.0m, true)); added = true; }
         if (!_mockUnits.Any(u => u.Abbreviation == "kg")) { _mockUnits.Add(new UnitOfMeasureInfo("Kilo", "kg", "masa", 1000.0m, true)); added = true; }
         if (!_mockUnits.Any(u => u.Abbreviation == "ml")) { _mockUnits.Add(new UnitOfMeasureInfo("Mililitro", "ml", "volumen", 1.0m, true)); added = true; }
-        
+
         if (added) _unitService.ClearCache();
     }
 
@@ -139,9 +139,9 @@ public class UnitOfMeasureSteps
         if (!_conversionResult.IsSuccess)
         {
             _conversionFailed = true;
-            _scenarioContext["ErrorMessage"] = _conversionResult.Error;
+            _scenarioContext["ErrorMessage"] = _conversionResult.Error?.Message;
         }
-        else 
+        else
         {
             _conversionFailed = false;
         }
@@ -161,7 +161,7 @@ public class UnitOfMeasureSteps
         var multiplier = (decimal)Math.Pow(10, precision);
         var actualRounded = Math.Round(_conversionResult!.Value * multiplier) / multiplier;
         var expectedRounded = Math.Round(expectedResult * multiplier) / multiplier;
-        
+
         Assert.That(actualRounded, Is.EqualTo(expectedRounded));
     }
 

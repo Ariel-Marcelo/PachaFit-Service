@@ -27,7 +27,7 @@ public class StockMovementSteps
         _productsService = dependencies.ProductsService;
         _inventoryService = dependencies.InventoryService;
         _scenarioContext = scenarioContext;
-        
+
         // Capture movements for verification
         _stockMovementRepository.When(x => x.SaveMovement(Arg.Any<StockMovementRequest>()))
             .Do(call => _recordedRequests.Add(call.Arg<StockMovementRequest>()));
@@ -43,12 +43,13 @@ public class StockMovementSteps
         )).ToList();
 
         var request = new ProductCreateRequest(
-            Name: name, 
-            SKU: sku, 
+            Name: name,
+            SKU: sku,
             InitialStock: stock,
             Composition: composition);
-        
-        _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(callInfo => {
+
+        _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(callInfo =>
+        {
             var req = callInfo.Arg<ProductCreateRequest>();
             return Task.FromResult(new ProductResponse(1, req.Name, req.SKU, req.InitialStock, 0, false, null));
         });
@@ -56,7 +57,7 @@ public class StockMovementSteps
         _createResult = await _productsService.CreateProduct(request);
         if (!_createResult.IsSuccess)
         {
-            _scenarioContext["ErrorMessage"] = _createResult.Error;
+            _scenarioContext["ErrorMessage"] = _createResult.Error?.Message;
         }
     }
 
@@ -89,8 +90,8 @@ public class StockMovementSteps
     public void GivenAProductExistsWithSKUAndCurrentStock(string sku, decimal stock)
     {
         _productRepository.GetBySku(sku).Returns(new ProductResponse(1, "Test", sku, stock, 0, false, null));
-        _stockMovementRepository.GetAvailableBatches(1).Returns(new List<StockBatchResponse> { 
-            new StockBatchResponse(1, stock, null) 
+        _stockMovementRepository.GetAvailableBatches(1).Returns(new List<StockBatchResponse> {
+            new StockBatchResponse(1, stock, null)
         });
     }
 
@@ -124,7 +125,7 @@ public class StockMovementSteps
         _dispatchResult = await _inventoryService.DispatchStock(1, quantity, unit);
         if (!_dispatchResult.IsSuccess)
         {
-            _scenarioContext["ErrorMessage"] = _dispatchResult.Error;
+            _scenarioContext["ErrorMessage"] = _dispatchResult.Error?.Message;
         }
     }
 
@@ -161,13 +162,13 @@ public class StockMovementSteps
         var row = table.Rows[0];
         var qty = decimal.Parse(row["Quantity"]);
         var unit = row["Unit"];
-        
+
         var request = new ProductCreateRequest(
-            Name: name, 
-            SKU: sku, 
-            InitialStock: qty, 
+            Name: name,
+            SKU: sku,
+            InitialStock: qty,
             InitialUnitAbbreviation: unit);
-        
+
         _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(
             new ProductResponse(1, name, sku, qty, 0, false, null)
         );
@@ -217,7 +218,7 @@ public class StockMovementSteps
         var row = table.Rows[0];
         var type = row["Type"];
         var qty = decimal.Parse(row["InputQty"]);
-        
+
         var match = _recordedRequests.FirstOrDefault(m => m.TypeMovement == type && m.InputQuantity == qty);
         Assert.That(match, Is.Not.Null, $"No movement found for {type} and qty {qty}");
         Assert.That(match?.InputUnitAbbreviation, Is.EqualTo(row["Unit"]));

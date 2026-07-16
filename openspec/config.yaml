@@ -19,7 +19,7 @@ testing:
   type_checker:
     command: dotnet build
 
-persistence_mode: hybrid
+persistence_mode: openspec
 delivery_strategy: ask-on-risk
 chain_strategy: feature-branch-chain
 

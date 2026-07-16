@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PACHA_FIT.Core.Domain.Inventory.Dtos;
 using PACHA_FIT.Core.Domain.Inventory.Ports;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
+using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Infrastructure.Persistence;
 using PACHA_FIT.Infrastructure.Persistence.Entities;
 using System.Text.Json;
@@ -38,7 +39,7 @@ public class ProductRepository : IProductRepository
     public async Task<ProductResponse> SaveProduct(ProductCreateRequest request)
     {
         var slug = request.Name.ToLower().Replace(" ", "-"); // Basic slugification
-        
+
         var product = new Product
         {
             Name = request.Name,
@@ -76,7 +77,7 @@ public class ProductRepository : IProductRepository
             {
                 var baseProduct = await _context.Products.FirstOrDefaultAsync(p => p.Sku == comp.BaseProductSku);
                 var unit = await _context.UnitOfMeasures.FirstOrDefaultAsync(u => u.Abbreviation == comp.UnitAbbreviation);
-                
+
                 if (baseProduct != null && unit != null)
                 {
                     _context.ProductCompositions.Add(new ProductComposition
@@ -97,12 +98,12 @@ public class ProductRepository : IProductRepository
     public async Task<Result<bool>> UpdateProduct(string sku, object updateData)
     {
         var product = await _context.Products.FirstOrDefaultAsync(p => p.Sku == sku);
-        if (product == null) return Result<bool>.Failure("Producto no encontrado", PACHA_FIT.Core.Domain.Shared.ErrorType.NotFound);
+        if (product == null) return Result<bool>.Failure(new Error(SystemError.NotFound, "Producto no encontrado"));
 
         // Simple update logic for now (could be more robust with reflection or specific DTO)
         // Since it's dynamic updateData, I'll just handle basic fields if needed or skip for now if not used.
         // The feature mentions updating Name and SalePrice.
-        
+
         var json = JsonSerializer.Serialize(updateData);
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options);
@@ -121,7 +122,7 @@ public class ProductRepository : IProductRepository
     public async Task<Result<bool>> DeactivateProduct(string sku)
     {
         var product = await _context.Products.FirstOrDefaultAsync(p => p.Sku == sku);
-        if (product == null) return Result<bool>.Failure("Producto no encontrado", PACHA_FIT.Core.Domain.Shared.ErrorType.NotFound);
+        if (product == null) return Result<bool>.Failure(new Error(SystemError.NotFound, "Producto no encontrado"));
 
         product.IsPublished = false;
         await _context.SaveChangesAsync();

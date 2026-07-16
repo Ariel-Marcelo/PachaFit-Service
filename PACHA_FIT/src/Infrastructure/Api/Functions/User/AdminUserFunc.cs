@@ -27,7 +27,7 @@ public class AdminUserFunc(IUserService userService)
     [Function("UpdateUser_Admin")]
     [PachaAuthorize(Roles = "Admin")]
     public async Task<Result<string>> RunUpdateUserAdmin(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/user/{userId:int}")] HttpRequest req, 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/user/{userId:int}")] HttpRequest req,
         int userId,
         FunctionContext executionContext)
     {
@@ -36,13 +36,13 @@ public class AdminUserFunc(IUserService userService)
 
         if (!isAdmin)
         {
-            return Result<string>.Failure(CommonMessages.UnauthorizedAccess, ErrorType.Unauthorized);
+            return Result<string>.Failure(new Error(SystemError.Unauthorized, CommonMessages.UnauthorizedAccess));
         }
 
         var request = await req.ReadFromJsonAsync<UpdateUserRequest>();
         if (request == null)
         {
-            return Result<string>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
+            return Result<string>.Failure(new Error(SystemError.BadRequest, CommonMessages.InvalidRequestBody));
         }
 
         CustomObjectValidator.Validate(request);

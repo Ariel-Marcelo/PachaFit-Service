@@ -17,7 +17,7 @@ public class CustomAuthenticationMiddleware : IFunctionsWorkerMiddleware
     {
         // 1. Obtener los datos de la petición HTTP
         var requestData = await context.GetHttpRequestDataAsync();
-        
+
         // 2. Buscar el Header "Authorization: Bearer <token>"
         if (requestData != null && requestData.Headers.TryGetValues("Authorization", out var values))
         {

@@ -12,7 +12,7 @@ public class UserService(IUserRepository userRepository, IPasswordService passwo
         var user = await userRepository.GetOneAsync(criteria);
 
         return user == null
-            ? Result<UserDto>.Failure($"Usuario no encontrado para el criterio especificado.", ErrorType.NotFound)
+            ? Result<UserDto>.Failure(new Error(SystemError.UserNotFound, "Usuario no encontrado para el criterio especificado."))
             : Result<UserDto>.Success(user);
     }
 
@@ -21,7 +21,7 @@ public class UserService(IUserRepository userRepository, IPasswordService passwo
         var updated = await userRepository.UpdateUser(currentUserId, updateInfo);
         if (!updated)
         {
-            return Result<string>.Failure(CommonMessages.UserNotFound, ErrorType.NotFound);
+            return Result<string>.Failure(new Error(SystemError.UserNotFound, CommonMessages.UserNotFound));
         }
         return Result<string>.Success("Usuario actualizado correctamente");
     }
@@ -31,7 +31,7 @@ public class UserService(IUserRepository userRepository, IPasswordService passwo
         var updated = await userRepository.UpdateUser(userId, updateInfo);
         if (!updated)
         {
-            return Result<string>.Failure(CommonMessages.UserNotFound, ErrorType.NotFound);
+            return Result<string>.Failure(new Error(SystemError.UserNotFound, CommonMessages.UserNotFound));
         }
         return Result<string>.Success("Usuario actualizado correctamente");
     }
@@ -41,17 +41,17 @@ public class UserService(IUserRepository userRepository, IPasswordService passwo
         var user = await userRepository.GetInternalUserByIdAsync(userId);
         if (user == null)
         {
-            return Result<string>.Failure(CommonMessages.UserNotFound, ErrorType.NotFound);
+            return Result<string>.Failure(new Error(SystemError.UserNotFound, CommonMessages.UserNotFound));
         }
 
         if (!passwordService.VerifyPassword(currentPassword, user.PasswordHash))
         {
-            return Result<string>.Failure(CommonMessages.Auth.InvalidCredentials, ErrorType.Unauthorized);
+            return Result<string>.Failure(new Error(SystemError.InvalidCredentials, CommonMessages.Auth.InvalidCredentials));
         }
 
         if (!IsPasswordStrong(newPassword))
         {
-            return Result<string>.Failure(CommonMessages.Validation.PasswordTooWeak, ErrorType.BadRequest);
+            return Result<string>.Failure(new Error(SystemError.Validation, CommonMessages.Validation.PasswordTooWeak));
         }
 
         var newHash = passwordService.HashPassword(newPassword);
@@ -59,7 +59,7 @@ public class UserService(IUserRepository userRepository, IPasswordService passwo
 
         return updated
             ? Result<string>.Success(CommonMessages.Auth.PasswordChangedSuccess)
-            : Result<string>.Failure(CommonMessages.UserNotFound, ErrorType.NotFound);
+            : Result<string>.Failure(new Error(SystemError.UserNotFound, CommonMessages.UserNotFound));
     }
 
     private static bool IsPasswordStrong(string password)

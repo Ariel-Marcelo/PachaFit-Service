@@ -18,10 +18,10 @@ public class InventoryFunc
     private readonly AdjustmentReasons _adjustmentReasons;
 
     public InventoryFunc(
-        ILogger<InventoryFunc> logger, 
-        UnitOfMeasureService unitOfMeasureService, 
-        ProductsService productsService, 
-        InventoryService inventoryService, 
+        ILogger<InventoryFunc> logger,
+        UnitOfMeasureService unitOfMeasureService,
+        ProductsService productsService,
+        InventoryService inventoryService,
         AdjustmentReasons adjustmentReasons)
     {
         _logger = logger;
@@ -45,16 +45,16 @@ public class InventoryFunc
         var result = await _unitOfMeasureService.GetAllActiveUnitsAsync();
         return result.IsSuccess && result.Value != null
             ? Result<UnitOfMeasureGroupedDto>.Success(result.Value.ToApi())
-            : Result<UnitOfMeasureGroupedDto>.Failure(result.Error!, result.StatusCode);
+            : Result<UnitOfMeasureGroupedDto>.Failure(result.Error!);
     }
 
     [Function("Inventory_ConvertUnit")]
     public async Task<Result<decimal>> RunConvertUnit(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/inventory/units/convert")] HttpRequest req)
     {
-        if (!double.TryParse(req.Query["quantity"], out double quantity)) 
-            return Result<decimal>.Failure("Invalid quantity", ErrorType.BadRequest);
-            
+        if (!double.TryParse(req.Query["quantity"], out double quantity))
+            return Result<decimal>.Failure(new Error(SystemError.BadRequest, "Invalid quantity"));
+
         string fromUnit = req.Query["fromUnit"]!;
         string toUnit = req.Query["toUnit"]!;
 
@@ -66,14 +66,14 @@ public class InventoryFunc
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/inventory/products")] HttpRequest req)
     {
         var body = await req.ReadFromJsonAsync<ProductCreateRequest>();
-        if (body == null) 
-            return Result<ProductResponse>.Failure("Invalid request body", ErrorType.BadRequest);
+        if (body == null)
+            return Result<ProductResponse>.Failure(new Error(SystemError.BadRequest, "Invalid request body"));
 
         var domainRequest = body.ToDomain();
         var result = await _productsService.CreateProduct(domainRequest);
         return result.IsSuccess && result.Value != null
             ? Result<ProductResponse>.Success(result.Value.ToApi())
-            : Result<ProductResponse>.Failure(result.Error!, result.StatusCode);
+            : Result<ProductResponse>.Failure(result.Error!);
     }
 
     [Function("Inventory_DeactivateProduct")]
@@ -88,8 +88,8 @@ public class InventoryFunc
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/inventory/dispatch")] HttpRequest req)
     {
         var body = await req.ReadFromJsonAsync<DispatchStockRequest>();
-        if (body == null) 
-            return Result<string>.Failure("Invalid request body", ErrorType.BadRequest);
+        if (body == null)
+            return Result<string>.Failure(new Error(SystemError.BadRequest, "Invalid request body"));
 
         return await _inventoryService.DispatchStock(body.ProductId, (decimal)body.Quantity, body.UnitAbbreviation);
     }

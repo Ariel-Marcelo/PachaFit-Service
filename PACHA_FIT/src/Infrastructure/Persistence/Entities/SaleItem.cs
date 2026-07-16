@@ -15,7 +15,7 @@ public partial class SaleItem
     public decimal UnitPriceSnapshot { get; set; }
 
     public decimal CostPriceSnapshot { get; set; }
-    
+
     public int TaxRateId { get; set; }
 
     public decimal TaxRateSnapshot { get; set; }
@@ -27,6 +27,6 @@ public partial class SaleItem
     public virtual Product? Product { get; set; }
 
     public virtual Sale? Sale { get; set; }
-    
+
     public virtual TaxRate? TaxRate { get; set; }
 }

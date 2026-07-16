@@ -16,20 +16,20 @@ public class ProfileFunc(IUserService userService)
     [Function("UpdateProfile")]
     [PachaAuthorize]
     public async Task<Result<string>> RunUpdateProfile(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/profile")] HttpRequest req, 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "v1/profile")] HttpRequest req,
         FunctionContext executionContext)
     {
         var user = executionContext.Items["User"] as ClaimsPrincipal;
         var currentUserIdStr = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(currentUserIdStr, out int currentUserId))
         {
-             return Result<string>.Failure(CommonMessages.UnauthorizedAccess, ErrorType.Unauthorized);
+            return Result<string>.Failure(new Error(SystemError.Unauthorized, CommonMessages.UnauthorizedAccess));
         }
 
         var request = await req.ReadFromJsonAsync<UpdateProfileRequest>();
         if (request == null)
         {
-            return Result<string>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
+            return Result<string>.Failure(new Error(SystemError.BadRequest, CommonMessages.InvalidRequestBody));
         }
         CustomObjectValidator.Validate(request);
 
@@ -41,20 +41,20 @@ public class ProfileFunc(IUserService userService)
     [Function("ChangePassword")]
     [PachaAuthorize]
     public async Task<Result<string>> RunChangePassword(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/profile/change-password")] HttpRequest req, 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/profile/change-password")] HttpRequest req,
         FunctionContext executionContext)
     {
         var user = executionContext.Items["User"] as ClaimsPrincipal;
         var currentUserIdStr = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(currentUserIdStr, out int currentUserId))
         {
-             return Result<string>.Failure(CommonMessages.UnauthorizedAccess, ErrorType.Unauthorized);
+            return Result<string>.Failure(new Error(SystemError.Unauthorized, CommonMessages.UnauthorizedAccess));
         }
 
         var request = await req.ReadFromJsonAsync<ChangePasswordRequest>();
         if (request == null)
         {
-            return Result<string>.Failure(CommonMessages.InvalidRequestBody, ErrorType.BadRequest);
+            return Result<string>.Failure(new Error(SystemError.BadRequest, CommonMessages.InvalidRequestBody));
         }
         CustomObjectValidator.Validate(request);
 

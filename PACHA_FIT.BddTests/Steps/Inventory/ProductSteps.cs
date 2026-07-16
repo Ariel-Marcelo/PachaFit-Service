@@ -75,11 +75,11 @@ public class ProductSteps
             Composition: _currentComposition.Any() ? _currentComposition : null
         );
 
-        _ = _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(callInfo => 
+        _ = _productRepository.SaveProduct(Arg.Any<ProductCreateRequest>()).Returns(callInfo =>
         {
             var req = callInfo.Arg<ProductCreateRequest>();
             var specsJson = req.Specs != null ? JsonSerializer.Serialize(req.Specs) : null;
-            
+
             var compResponse = req.Composition?.Select(c => new ProductCompositionResponse(
                 BaseProductName: _knownProductNames.GetValueOrDefault(c.BaseProductSku, "Unknown"),
                 Quantity: c.Quantity,
@@ -87,12 +87,12 @@ public class ProductSteps
             )).ToList();
 
             return Task.FromResult(new ProductResponse(
-                1, 
-                req.Name, 
-                req.SKU, 
-                0, 
-                req.IvaPercentage, 
-                req.IsWeightBased, 
+                1,
+                req.Name,
+                req.SKU,
+                0,
+                req.IvaPercentage,
+                req.IsWeightBased,
                 specsJson,
                 compResponse));
         });
@@ -100,7 +100,7 @@ public class ProductSteps
         _createResult = await _productsService.CreateProduct(request);
         if (!_createResult.IsSuccess)
         {
-            _scenarioContext["ErrorMessage"] = _createResult.Error;
+            _scenarioContext["ErrorMessage"] = _createResult.Error?.Message;
         }
     }
 
@@ -109,7 +109,7 @@ public class ProductSteps
     {
         var row = table.Rows[0];
         var name = row.ContainsKey("Name") ? row["Name"] : "Updated Product";
-        
+
         _ = _productRepository.UpdateProduct(sku, Arg.Any<object>()).Returns(Task.FromResult(Result<bool>.Success(true)));
         _ = _productRepository.GetBySku(sku).Returns(Task.FromResult(new ProductResponse(1, name, sku, 0, 0, false, null, null)));
 
@@ -126,7 +126,7 @@ public class ProductSteps
     [Then(@"the product should be created successfully")]
     public void ThenTheProductShouldBeCreatedSuccessfully()
     {
-        Assert.That(_createResult?.IsSuccess, Is.True, $"Create product failed: {_createResult?.Error}");
+        Assert.That(_createResult?.IsSuccess, Is.True, $"Create product failed: {_createResult?.Error?.Message}");
     }
 
     [Then(@"the creation should fail")]
@@ -169,7 +169,7 @@ public class ProductSteps
     [Then(@"a stock movement should be recorded as ""([^""]*)"" with quantity (.*)")]
     public async Task ThenAStockMovementShouldBeRecordedAsWithQuantity(string type, decimal quantity)
     {
-        await _stockMovementRepository.Received(1).SaveMovement(Arg.Is<StockMovementRequest>(m => 
+        await _stockMovementRepository.Received(1).SaveMovement(Arg.Is<StockMovementRequest>(m =>
             m.TypeMovement == type && m.InputQuantity == quantity));
     }
 
@@ -221,9 +221,9 @@ public class ProductSteps
 
         foreach (var row in table.Rows)
         {
-            var exists = actualComposition!.Any((ProductCompositionResponse c) => 
-                c.BaseProductName == row["BaseProductName"] && 
-                c.Quantity == decimal.Parse(row["Quantity"]) && 
+            var exists = actualComposition!.Any((ProductCompositionResponse c) =>
+                c.BaseProductName == row["BaseProductName"] &&
+                c.Quantity == decimal.Parse(row["Quantity"]) &&
                 c.UnitAbbreviation == row["UnitAbbreviation"]
             );
             Assert.That(exists, Is.True, $"Composition {row["BaseProductName"]} not found or mismatch");

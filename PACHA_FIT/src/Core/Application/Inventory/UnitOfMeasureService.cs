@@ -31,22 +31,22 @@ public class UnitOfMeasureService
             return Result<decimal>.Success(unit.ConversionFactor);
         }
 
-        return Result<decimal>.Failure($"Unknown unit of measure: {abbreviation}", ErrorType.NotFound);
+        return Result<decimal>.Failure(new Error(SystemError.NotFound, $"Unknown unit of measure: {abbreviation}"));
     }
 
     public async Task<Result<decimal>> Convert(decimal quantity, string fromUnit, string toUnit)
     {
         var cache = await GetCacheAsync();
-        
+
         if (!cache.TryGetValue(fromUnit, out var from))
-            return Result<decimal>.Failure($"Unknown unit of measure: {fromUnit}", ErrorType.NotFound);
-            
+            return Result<decimal>.Failure(new Error(SystemError.NotFound, $"Unknown unit of measure: {fromUnit}"));
+
         if (!cache.TryGetValue(toUnit, out var to))
-            return Result<decimal>.Failure($"Unknown unit of measure: {toUnit}", ErrorType.NotFound);
+            return Result<decimal>.Failure(new Error(SystemError.NotFound, $"Unknown unit of measure: {toUnit}"));
 
         if (from.Category != to.Category)
         {
-            return Result<decimal>.Failure($"Incompatibilidad de unidades: no se puede convertir {from.Category} a {to.Category}", ErrorType.Validation);
+            return Result<decimal>.Failure(new Error(SystemError.Validation, $"Incompatibilidad de unidades: no se puede convertir {from.Category} a {to.Category}"));
         }
 
         var result = (quantity * from.ConversionFactor) / to.ConversionFactor;
@@ -60,9 +60,9 @@ public class UnitOfMeasureService
         {
             return Result<string>.Success(unit.Category);
         }
-        return Result<string>.Failure($"Unknown unit of measure: {abbreviation}", ErrorType.NotFound);
+        return Result<string>.Failure(new Error(SystemError.NotFound, $"Unknown unit of measure: {abbreviation}"));
     }
-    
+
     private async Task<Dictionary<string, UnitOfMeasureInfo>> GetCacheAsync()
     {
         if (_cache != null) return _cache;

@@ -1,5 +1,6 @@
 using PACHA_FIT.Core.Domain.Inventory.Dtos;
 using PACHA_FIT.Core.Domain.Inventory.Ports;
+using PACHA_FIT.Core.Domain.Shared;
 using PACHA_FIT.Core.Domain.Shared.ResultPattern;
 
 namespace PACHA_FIT.Core.Application.Inventory;
@@ -20,22 +21,22 @@ public class ProductsService
         // Validation: Unique SKU
         if (await _productRepository.ExistsSku(request.SKU))
         {
-            return Result<ProductResponse>.Failure("El SKU ya existe", PACHA_FIT.Core.Domain.Shared.ErrorType.Validation);
+            return Result<ProductResponse>.Failure(new Error(SystemError.Validation, "El SKU ya existe"));
         }
 
         // Validation: Positive prices
         if (request.CostPrice < 0 || request.SalePrice < 0)
         {
-            return Result<ProductResponse>.Failure("El precio no puede ser negativo", PACHA_FIT.Core.Domain.Shared.ErrorType.Validation);
+            return Result<ProductResponse>.Failure(new Error(SystemError.Validation, "El precio no puede ser negativo"));
         }
 
         var response = await _productRepository.SaveProduct(request);
-        
+
         // Side effect: Record initial stock movement for the parent product
         await _stockMovementRepository.SaveMovement(new StockMovementRequest(
             ProductId: response.ProductId,
             InputQuantity: request.InitialStock,
-            InputUnitAbbreviation: request.InitialUnitAbbreviation, 
+            InputUnitAbbreviation: request.InitialUnitAbbreviation,
             BaseQuantityAffected: request.InitialStock, // Simplification
             TypeMovement: "Ingreso",
             Description: "Carga inicial de producto"
@@ -47,31 +48,31 @@ public class ProductsService
             foreach (var component in request.Composition)
             {
                 var componentProduct = await _productRepository.GetBySku(component.BaseProductSku);
-                
+
                 if (componentProduct == null)
                 {
-                    return Result<ProductResponse>.Failure($"El producto base {component.BaseProductSku} no existe", PACHA_FIT.Core.Domain.Shared.ErrorType.NotFound);
+                    return Result<ProductResponse>.Failure(new Error(SystemError.NotFound, $"El producto base {component.BaseProductSku} no existe"));
                 }
 
                 var requiredQty = component.Quantity * request.InitialStock;
 
                 if (componentProduct.StockQty < requiredQty)
                 {
-                    return Result<ProductResponse>.Failure($"Stock insuficiente de {componentProduct.Name} para el ensamble", PACHA_FIT.Core.Domain.Shared.ErrorType.Validation);
+                    return Result<ProductResponse>.Failure(new Error(SystemError.Validation, $"Stock insuficiente de {componentProduct.Name} para el ensamble"));
                 }
 
                 await _stockMovementRepository.SaveMovement(new StockMovementRequest(
-                    ProductId: componentProduct.ProductId, 
+                    ProductId: componentProduct.ProductId,
                     InputQuantity: requiredQty,
                     InputUnitAbbreviation: component.UnitAbbreviation,
-                    BaseQuantityAffected: requiredQty, 
+                    BaseQuantityAffected: requiredQty,
                     TypeMovement: "Egreso",
                     Description: $"Descuento por ensamble de Kit: {response.Name}"
                 ));
             }
         }
 
-        return Result<ProductResponse>.Success(response);
+        return Result<ProductResponse>.Created(response);
     }
 
     public async Task<Result<bool>> DeactivateProduct(string sku)

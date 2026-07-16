@@ -35,7 +35,7 @@ public class CredentialService : ICredentialService
             Issuer = _issuer,
             Audience = _audience,
             SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key), 
+                new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
         };
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace PACHA_FIT.Api.Middlewares;
 
-public class ExceptionHandlerMiddleware: IFunctionsWorkerMiddleware
+public class ExceptionHandlerMiddleware : IFunctionsWorkerMiddleware
 {
     private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
@@ -48,10 +48,10 @@ public class ExceptionHandlerMiddleware: IFunctionsWorkerMiddleware
                         .Replace("and a maximum length of", "y una máxima de");
                 }
 
-                var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") 
-                                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") 
+                var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")
+                                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                                   ?? "Production";
-                
+
                 bool isDevelopment = string.Equals(environment, "Development", StringComparison.OrdinalIgnoreCase);
 
                 object errorBody;
@@ -61,7 +61,7 @@ public class ExceptionHandlerMiddleware: IFunctionsWorkerMiddleware
                 }
                 else
                 {
-                    errorBody = isDevelopment 
+                    errorBody = isDevelopment
                         ? new { error = "Se produjo un error interno en el servidor.", details = ex.ToString() }
                         : new { error = "Se produjo un error interno en el servidor." };
                 }

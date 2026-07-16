@@ -23,7 +23,7 @@ public class SwaggerFunc
         {
             // En el modelo aislado, los archivos se copian al directorio de ejecución
             var path = Path.Combine(AppContext.BaseDirectory, "docs", "openapi.yaml");
-            
+
             _logger.LogInformation("Intentando leer el archivo OpenAPI desde: {path}", path);
 
             if (!File.Exists(path))

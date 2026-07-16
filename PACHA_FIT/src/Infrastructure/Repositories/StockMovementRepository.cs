@@ -18,7 +18,7 @@ public class StockMovementRepository : IStockMovementRepository
     public async Task SaveMovement(StockMovementRequest request)
     {
         var unit = await _context.UnitOfMeasures.FirstOrDefaultAsync(u => u.Abbreviation == request.InputUnitAbbreviation);
-        
+
         var movement = new StockMovement
         {
             ProductId = request.ProductId,
@@ -33,7 +33,7 @@ public class StockMovementRepository : IStockMovementRepository
         };
 
         _context.StockMovements.Add(movement);
-        
+
         // Update product stock quantity
         var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == request.ProductId);
         if (product != null)

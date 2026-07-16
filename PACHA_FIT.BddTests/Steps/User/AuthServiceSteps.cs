@@ -15,7 +15,7 @@ public class AuthServiceSteps
     private readonly IUserRepository _userRepository;
     private readonly IPasswordService _passwordService;
     private readonly AuthService _authService;
-    
+
     private Result<AuthSession>? _loginResult;
     private Result<string>? _signUpResult;
 
@@ -88,13 +88,13 @@ public class AuthServiceSteps
     [Then(@"the login error message should be ""(.*)""")]
     public void ThenTheLoginErrorMessageShouldBe(string errorMessage)
     {
-        Assert.That(_loginResult?.Error, Is.EqualTo(errorMessage));
+        Assert.That(_loginResult?.Error?.Message, Is.EqualTo(errorMessage));
     }
 
     [Then(@"the sign up result should be successful")]
     public void ThenTheSignUpResultShouldBeSuccessful()
     {
-        Assert.That(_signUpResult?.IsSuccess, Is.True, $"Sign up should be successful. Error: {_signUpResult?.Error}");
+        Assert.That(_signUpResult?.IsSuccess, Is.True, $"Sign up should be successful. Error: {_signUpResult?.Error?.Message}");
     }
 
     [Then(@"the sign up result should be a failure")]
@@ -106,7 +106,7 @@ public class AuthServiceSteps
     [Then(@"the sign up error message should be ""(.*)""")]
     public void ThenTheSignUpErrorMessageShouldBe(string errorMessage)
     {
-        Assert.That(_signUpResult?.Error, Is.EqualTo(errorMessage));
+        Assert.That(_signUpResult?.Error?.Message, Is.EqualTo(errorMessage));
     }
 
     [Then(@"the user should be saved")]

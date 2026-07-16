@@ -18,14 +18,14 @@ public record AuthSession(
 )
 {
     public static Result<AuthSession> Authenticate(
-        InternalUserResponse user, 
-        string password, 
-        IPasswordService passwordService, 
+        InternalUserResponse user,
+        string password,
+        IPasswordService passwordService,
         ICredentialService credentialService)
     {
         if (!passwordService.VerifyPassword(password, user.PasswordHash))
         {
-            return Result<AuthSession>.Failure("Credenciales incorrectas", ErrorType.Unauthorized);
+            return Result<AuthSession>.Failure(new Error(SystemError.InvalidCredentials, "Credenciales incorrectas"));
         }
 
         var token = credentialService.GenerateToken(user);

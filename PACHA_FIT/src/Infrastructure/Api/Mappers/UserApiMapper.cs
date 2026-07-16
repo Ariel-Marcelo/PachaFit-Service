@@ -12,22 +12,22 @@ public static partial class UserApiMapper
     // To Domain
     [MapProperty(nameof(EntityUser.Role) + "." + nameof(EntityUser.Role.Name), "RoleName")]
     public static partial InternalUserResponse? ToInternalUser(EntityUser? user);
-    
+
 
 
     public static partial NewUserRegistration NewUserRequestToRegistration(NewUserRequest request);
-    
+
     public static partial UserUpdateInfo ToUpdateInfo(UpdateProfileRequest request);
     public static partial UserUpdateInfo ToUpdateInfo(UpdateUserRequest request);
-    
+
     [MapProperty(nameof(EntityUser.Role) + "." + nameof(EntityUser.Role.Name), "RoleName")]
     public static partial UserDto? ToUserDto(EntityUser? user);
 
-    
+
     // ToEntities
     public static partial EntityUser ToEntityUser(User user);
-    
-    
+
+
     //Utils
     public static void ApplyUpdate(UserUpdateInfo updateInfo, EntityUser user)
     {
@@ -40,6 +40,6 @@ public static partial class UserApiMapper
         if (updateInfo.RoleId.HasValue) user.RoleId = updateInfo.RoleId.Value;
         if (updateInfo.IsActive.HasValue) user.IsActive = updateInfo.IsActive.Value;
     }
-    
-    
-    }
+
+
+}

@@ -24,7 +24,7 @@ public class AuthService : IAuthService
     {
         var user = await _userRepository.GetInternalUserAsync(credentials.Username);
         return user == null
-            ? Result<AuthSession>.Failure(CommonMessages.UserNotFound, ErrorType.Unauthorized)
+            ? Result<AuthSession>.Failure(new Error(SystemError.UserNotFound, CommonMessages.UserNotFound))
             : AuthSession.Authenticate(user!, credentials.Password, _passwordService, _credentialService);
     }
 
@@ -33,18 +33,18 @@ public class AuthService : IAuthService
         var existingUser = await _userRepository.GetInternalUserAsync(registration.Email);
         if (existingUser != null)
         {
-            return Result<string>.Failure(CommonMessages.UserAlreadyExists, ErrorType.Conflict);
+            return Result<string>.Failure(new Error(SystemError.UserAlreadyExists, CommonMessages.UserAlreadyExists));
         }
 
         if (!IsPasswordStrong(registration.Password))
         {
-            return Result<string>.Failure(CommonMessages.Validation.PasswordTooWeak, ErrorType.BadRequest);
+            return Result<string>.Failure(new Error(SystemError.Validation, CommonMessages.Validation.PasswordTooWeak));
         }
 
         var user = Domain.User.User.CreateFromRegistration(registration, _passwordService);
         await _userRepository.SaveUser(user);
-        
-        return Result<string>.Success(CommonMessages.Auth.RegistrationSuccess);
+
+        return Result<string>.Created(CommonMessages.Auth.RegistrationSuccess);
     }
 
     private static bool IsPasswordStrong(string password)
